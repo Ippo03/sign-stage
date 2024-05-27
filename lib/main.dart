@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sign_stage/screens/chat_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -14,16 +15,9 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Main App',
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Main App'),
-        ),
-        body: const Center(
-          child: Text('Hello, World!'),
-        ),
-      ),
+      home: const ChatScreen(),
     );
   }
 }
