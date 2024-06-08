@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/widgets/chatbot/chat_bubble.dart';
 import 'package:sign_stage/widgets/custom/progress_bar.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -26,7 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0.0,
         title: const ProgressBar(
           progress: 0.3, // Adjust progress value as needed
@@ -61,39 +60,39 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Stack(
           children: [
             chatContentWidget(),
-            Positioned(
-              left: offset.dx,
-              top: offset.dy,
-              child: ChatBubble(
-                isExpanded: true,
-                onTap: () {},
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.lightBlue[300],
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.all(0.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                          color: Colors.blueAccent,
-                          width: 2.0), // Outline color and width
-                      borderRadius: BorderRadius.circular(
-                          30.0), // Optional: Make the border rounded
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 2.0, vertical: 2.0),
-                      child: Image.asset(
-                        'assets/icons/assistant.png',
-                        width: 60.0,
-                        height: 60.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   left: offset.dx,
+            //   top: offset.dy,
+            //   child: ChatBubble(
+            //     isExpanded: true,
+            //     onTap: () {},
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         color: Colors.lightBlue[300],
+            //         borderRadius: BorderRadius.circular(30.0),
+            //       ),
+            //       child: Container(
+            //         padding: const EdgeInsets.all(0.0),
+            //         decoration: BoxDecoration(
+            //           border: Border.all(
+            //               color: Colors.blueAccent,
+            //               width: 2.0), // Outline color and width
+            //           borderRadius: BorderRadius.circular(
+            //               30.0), // Optional: Make the border rounded
+            //         ),
+            //         child: Padding(
+            //           padding: const EdgeInsets.symmetric(
+            //               horizontal: 2.0, vertical: 2.0),
+            //           child: Image.asset(
+            //             'assets/icons/assistant.png',
+            //             width: 60.0,
+            //             height: 60.0,
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),
