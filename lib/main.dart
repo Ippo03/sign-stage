@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/screens/chat_screen.dart';
+
+import 'screens/login_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -17,7 +18,7 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Main App',
-      home: const ChatScreen(),
+      home: LoginScreen(),
     );
   }
 }

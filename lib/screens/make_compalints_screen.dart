@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class MakeComplaints extends StatefulWidget {
-  const MakeComplaints({super.key});
+class MakeComplaintsScreen extends StatefulWidget {
+  const MakeComplaintsScreen({super.key});
 
   @override
-  State<MakeComplaints> createState() => _MakeComplaintsState();
+  State<MakeComplaintsScreen> createState() => _MakeComplaintsScreenState();
 }
 
-class _MakeComplaintsState extends State<MakeComplaints> {
+class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
   final _emailController = TextEditingController();
   final _phoneNumberController = TextEditingController();
   final _complaintHeadlineController = TextEditingController();

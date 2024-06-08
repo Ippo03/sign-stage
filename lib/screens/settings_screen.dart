@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/screens/login.dart';
+import 'package:sign_stage/models/user.dart';
+import 'package:sign_stage/screens/contact_details_screen.dart';
+import 'package:sign_stage/screens/etickets_screen.dart';
+import 'package:sign_stage/screens/login_screen.dart';
+import 'package:sign_stage/screens/make_compalints_screen.dart';
 import 'package:sign_stage/widgets/entities/setting_list_item.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({
+    super.key,
+    required this.user,
+  });
+
+  final User user;
 
   @override
   Widget build(BuildContext context) {
@@ -76,21 +85,21 @@ class SettingsScreen extends StatelessWidget {
             icon: Icons.contact_phone,
             iconColor: Colors.blue,
             title: 'Contact Details',
-            navigateTo: LoginScreen(),
+            navigateTo: ContactDetailsScreen(),
             textColor: Colors.white,
           ),
           SettingsListItem(
             icon: Icons.confirmation_number,
             iconColor: Colors.teal,
             title: 'Your E-Tickets',
-            navigateTo: LoginScreen(),
+            navigateTo: ETicketsScreen(),
             textColor: Colors.white,
           ),
           SettingsListItem(
             icon: Icons.report,
             iconColor: Colors.blueGrey,
             title: 'Make Complaints',
-            navigateTo: LoginScreen(),
+            navigateTo: MakeComplaintsScreen(),
             textColor: Colors.white,
           ),
           SettingsListItem(

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:sign_stage/models/play.dart';
+import 'package:sign_stage/screens/etickets_screen.dart';
 import 'package:sign_stage/widgets/custom/custom_text_field.dart';
 
 class PaymentScreen extends StatelessWidget {
-  const PaymentScreen({super.key});
+  const PaymentScreen({super.key, required this.play});
+
+  final Play play;
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +14,7 @@ class PaymentScreen extends StatelessWidget {
       backgroundColor: Color(0xFF2D2D2D),
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text('Checkout'),
+        title: const Text('Checkout'),
         centerTitle: true,
       ),
       body: Padding(
@@ -18,7 +22,7 @@ class PaymentScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Payment Method',
               style: TextStyle(
                 color: Colors.white,
@@ -26,14 +30,14 @@ class PaymentScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.blue,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -115,10 +119,16 @@ class PaymentScreen extends StatelessWidget {
                 )),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Show success dialog and navigate to e-tickets screen
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const ETicketsScreen(),
+                  ),
+                  );
+                },
                 // style: ElevatedButton.styleFrom(
                 //   primary: Colors.blue,
                 //   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),

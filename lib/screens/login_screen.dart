@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sign_stage/models/user.dart';
+import 'package:sign_stage/screens/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +17,7 @@ class LoginScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/hotel-1.jpg', 
+                  'assets/images/hotel-1.jpg',
                   height: 100,
                 ),
                 const SizedBox(height: 20),
@@ -72,6 +74,14 @@ class LoginScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     // Login logic
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeScreen(
+                          user: User(),
+                        ),
+                      ),
+                    );
                   },
                   // style: ElevatedButton.styleFrom(
                   //   primary: Colors.blue,
