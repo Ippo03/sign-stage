@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/user.dart';
-import 'package:sign_stage/screens/home_screen.dart';
-import 'package:sign_stage/widgets/custom/detailed_column.dart';
+import 'package:sign_stage/screens/main/home_screen.dart';
+import 'package:sign_stage/widgets/custom/custom_detailed_column.dart';
 
 class ETicketsScreen extends StatelessWidget {
   const ETicketsScreen({super.key});

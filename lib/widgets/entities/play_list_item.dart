@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/play.dart';
-import 'package:sign_stage/screens/booking_screen.dart';
-import 'package:sign_stage/screens/play_details_screen.dart';
+import 'package:sign_stage/screens/main/booking_screen.dart';
+import 'package:sign_stage/screens/main/play_details_screen.dart';
 
 class PlayListItem extends StatelessWidget {
   const PlayListItem({

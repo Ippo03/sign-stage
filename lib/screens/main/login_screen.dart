@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/user.dart';
-import 'package:sign_stage/screens/home_screen.dart';
+import 'package:sign_stage/screens/main/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
+
+  void _onLogin() {
+    // Login logic
+    
+  }
 
   @override
   Widget build(BuildContext context) {

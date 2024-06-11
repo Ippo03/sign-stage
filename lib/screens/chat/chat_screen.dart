@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/widgets/custom/progress_bar.dart';
+import 'package:sign_stage/widgets/custom/custom_progress_bar.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -10,7 +10,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   String _message = '';
-  Offset offset = Offset(20.0, 20.0);
+  Offset offset = const Offset(20.0, 20.0);
   Offset initialPosition = Offset.zero;
 
   void _sendMessage() {
@@ -60,39 +60,6 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Stack(
           children: [
             chatContentWidget(),
-            // Positioned(
-            //   left: offset.dx,
-            //   top: offset.dy,
-            //   child: ChatBubble(
-            //     isExpanded: true,
-            //     onTap: () {},
-            //     child: Container(
-            //       decoration: BoxDecoration(
-            //         color: Colors.lightBlue[300],
-            //         borderRadius: BorderRadius.circular(30.0),
-            //       ),
-            //       child: Container(
-            //         padding: const EdgeInsets.all(0.0),
-            //         decoration: BoxDecoration(
-            //           border: Border.all(
-            //               color: Colors.blueAccent,
-            //               width: 2.0), // Outline color and width
-            //           borderRadius: BorderRadius.circular(
-            //               30.0), // Optional: Make the border rounded
-            //         ),
-            //         child: Padding(
-            //           padding: const EdgeInsets.symmetric(
-            //               horizontal: 2.0, vertical: 2.0),
-            //           child: Image.asset(
-            //             'assets/icons/assistant.png',
-            //             width: 60.0,
-            //             height: 60.0,
-            //           ),
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -135,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.send),
+                    icon: const Icon(Icons.send),
                     onPressed: _message.isNotEmpty ? _sendMessage : null,
                   ),
                 ],

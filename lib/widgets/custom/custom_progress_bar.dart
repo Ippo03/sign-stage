@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 class ProgressBar extends StatelessWidget {
@@ -14,7 +15,7 @@ class ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 10.0,
       child: Stack(
@@ -31,7 +32,7 @@ class ProgressBar extends StatelessWidget {
             color: Colors.transparent,
             child: Text(
               label,
-              style: TextStyle(fontSize: 12.0, color: Colors.white),
+              style: const TextStyle(fontSize: 12.0, color: Colors.white),
             ),
           ),
         ],

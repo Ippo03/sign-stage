@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/play.dart';
-import 'package:sign_stage/screens/etickets_screen.dart';
+import 'package:sign_stage/screens/main/etickets_screen.dart';
 import 'package:sign_stage/widgets/custom/custom_text_field.dart';
 
 class PaymentScreen extends StatelessWidget {

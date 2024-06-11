@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/screens/chat_screen.dart';
+import 'package:sign_stage/screens/chat/chat_screen.dart';
 import 'package:sign_stage/widgets/chatbot/chat_bubble.dart';
 
 class BaseScreen extends StatefulWidget {

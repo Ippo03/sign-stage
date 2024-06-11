@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/user.dart';
-import 'package:sign_stage/screens/contact_details_screen.dart';
-import 'package:sign_stage/screens/etickets_screen.dart';
-import 'package:sign_stage/screens/login_screen.dart';
-import 'package:sign_stage/screens/make_compalints_screen.dart';
+import 'package:sign_stage/screens/main/etickets_screen.dart';
+import 'package:sign_stage/screens/main/login_screen.dart';
+import 'package:sign_stage/screens/secondary/contact_details_screen.dart';
+import 'package:sign_stage/screens/secondary/make_compalints_screen.dart';
 import 'package:sign_stage/widgets/entities/setting_list_item.dart';
 
 class SettingsScreen extends StatelessWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/play.dart';
-import 'package:sign_stage/screens/base_screen.dart';
-import 'package:sign_stage/screens/payment_screen.dart';
-import 'package:sign_stage/widgets/custom/progress_bar.dart';
+import 'package:sign_stage/screens/chat/base_screen.dart';
+import 'package:sign_stage/screens/main/payment_screen.dart';
+import 'package:sign_stage/widgets/custom/custom_progress_bar.dart';
 
 class BookingScreen extends StatelessWidget {
   const BookingScreen({super.key, required this.play});

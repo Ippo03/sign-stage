@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sign_stage/data/complaints.dart';
+import 'package:sign_stage/models/complaint.dart';
 
 class MakeComplaintsScreen extends StatefulWidget {
   const MakeComplaintsScreen({super.key});
@@ -20,6 +22,17 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
     _complaintHeadlineController.dispose();
     _complaintDescriptionController.dispose();
     super.dispose();
+  }
+
+  void _onAddComplaint() {
+    final complaint = Complaint(
+      email: _emailController.text,
+      phoneNumber: _phoneNumberController.text,
+      headline: _complaintHeadlineController.text,
+      description: _complaintDescriptionController.text,
+    );
+    complaints.add(complaint);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -84,7 +97,7 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
             const Spacer(),
             ElevatedButton(
               onPressed: () {
-                // Handle submit complaint logic here
+                _onAddComplaint();
               },
               child: const Text('Submit your Complaint'),
             ),
