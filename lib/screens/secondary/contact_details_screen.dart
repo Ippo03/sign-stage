@@ -1,13 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sign_stage/data/constants.dart';
+import 'package:sign_stage/services/launcher_url_services.dart';
+import 'package:sign_stage/widgets/custom/custom_map.dart';
 
 class ContactDetailsScreen extends StatelessWidget {
   const ContactDetailsScreen({super.key});
+
+  void _getDirections() {
+    openGoogleMaps(
+      signStageLat,
+      signStageLng,
+    );
+  }
+
+  void _makePhoneCall() {
+    makePhoneCall(signStagePhone);
+  }
+
+  void _sendEmail() {
+    sendEmail(signStageEmail);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Contact Details'),
+        title: const Text(
+          'Contact Details',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.grey[800],
       ),
       backgroundColor: Colors.grey[800],
       body: Padding(
@@ -24,20 +47,28 @@ class ContactDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8.0),
-            Image.asset('assets/images/map.jpg'),
+            const SizedBox(
+              height: 150,
+              child: CustomMap(
+                markerLocation: LatLng(signStageLat, signStageLng),
+                markerTitle: signStageName,
+              ),
+            ),
             const SizedBox(height: 16.0),
             const Text(
-              'Pindakou 2, Athina 10671',
+              signStageAddress,
               style: TextStyle(fontSize: 16.0, color: Colors.white),
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                _getDirections();
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.blue,
+              ),
               child: const Text('Get Directions'),
-              // style: ElevatedButton.styleFrom(
-              //   primary: Colors.blue, // Background color
-              //   onPrimary: Colors.white, // Text color
-              // ),
             ),
             const SizedBox(height: 16.0),
             const Row(
@@ -75,9 +106,21 @@ class ContactDetailsScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              '6970455215 (Tap this line)',
-              style: TextStyle(fontSize: 16.0, color: Colors.white),
+            Row(
+              children: [
+                const SizedBox(width: 8.0),
+                GestureDetector(
+                  onTap: _makePhoneCall,
+                  child: const Text(
+                    signStagePhone,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16.0),
             const Row(
@@ -95,9 +138,21 @@ class ContactDetailsScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              'sign_stage@support.com',
-              style: TextStyle(fontSize: 16.0, color: Colors.white),
+            Row(
+              children: [
+                const SizedBox(width: 8.0),
+                GestureDetector(
+                  onTap: _sendEmail,
+                  child: const Text(
+                    signStageEmail,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
