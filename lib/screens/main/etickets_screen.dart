@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/models/user.dart';
-import 'package:sign_stage/screens/main/home_screen.dart';
 import 'package:sign_stage/widgets/custom/custom_detailed_column.dart';
 
 class ETicketsScreen extends StatelessWidget {
@@ -156,11 +154,11 @@ class ETicketsScreen extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Show success dialog and navigate to e-tickets screen
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => HomeScreen(user: User()),
-                  ),
-                  );
+                  // // Show success dialog and navigate to e-tickets screen
+                  // Navigator.of(context).push(MaterialPageRoute(
+                  //   builder: (context) => HomeScreen(user: User()),
+                  // ),
+                  // );
                 },
                 // style: ElevatedButton.styleFrom(
                 //   primary: Colors.blue,
