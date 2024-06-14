@@ -1,20 +1,17 @@
-
 import 'package:flutter/material.dart';
+import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
 
 class ProgressBar extends StatelessWidget {
-  final double progress;
-  final String label;
-  final Color color;
-
-  const ProgressBar({
-    super.key,
-    required this.progress,
-    required this.label,
-    required this.color,
-  });
-
   @override
   Widget build(BuildContext context) {
+    final progressBarState = ProgressBarProvider.of(context)?.state;
+
+    if (progressBarState == null) {
+      throw FlutterError(
+        'ProgressBar widget must be wrapped in a ProgressBarProvider widget.',
+      );
+    }
+
     return SizedBox(
       width: double.infinity,
       height: 10.0,
@@ -23,15 +20,15 @@ class ProgressBar extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
-              value: progress,
+              value: progressBarState.progress,
               backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(color),
+              valueColor: AlwaysStoppedAnimation<Color>(progressBarState.color),
             ),
           ),
           Material(
             color: Colors.transparent,
             child: Text(
-              label,
+              progressBarState.label,
               style: const TextStyle(fontSize: 12.0, color: Colors.white),
             ),
           ),
