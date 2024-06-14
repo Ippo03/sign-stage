@@ -7,12 +7,9 @@ import 'package:sign_stage/screens/secondary/make_compalints_screen.dart';
 import 'package:sign_stage/widgets/entities/setting_list_item.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({
-    super.key,
-    required this.user,
-  });
+  SettingsScreen({super.key});
 
-  final User user;
+  final User user = User.instance!;
 
   @override
   Widget build(BuildContext context) {

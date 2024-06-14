@@ -6,12 +6,11 @@ import 'package:sign_stage/screens/secondary/settings_screen.dart';
 import 'package:sign_stage/widgets/entities/play_list_item.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({
+  HomeScreen({
     super.key,
-    required this.user,
   });
 
-  final User user;
+  final User user = User.instance!;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +24,7 @@ class HomeScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SettingsScreen(
-                    user: user,
-                  ),
+                  builder: (context) => SettingsScreen(),
                 ),
               );
             },

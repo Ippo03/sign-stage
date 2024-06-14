@@ -2,7 +2,7 @@
 import 'package:sign_stage/models/user.dart';
 
 List<User> users = [
-  const User(
+  User(
     username: 'ippo',
     email: 'ippo@example.com',
     password: 'ippo123',

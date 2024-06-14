@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/data/users.dart';
-import 'package:sign_stage/models/user.dart';
 import 'package:sign_stage/screens/main/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -38,17 +37,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _attemptLogin() {
     String username = usernameController.text.trim();
-    String password = passwordController.text;
+    String password = passwordController.text.trim();
 
     if (_login(username, password)) {
-      User authenticatedUser = users.firstWhere(
-        (user) => user.username == username || user.email == username,
-      );
-
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(user: authenticatedUser),
+          builder: (context) => HomeScreen(),
         ),
       );
     } else {
