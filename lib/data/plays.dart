@@ -4,7 +4,7 @@ List<Play> plays = [
   Play(
     title: 'Hamlet',
     author: 'William Shakespeare',
-    hall: 'Globe Theatre',
+    hall: 'Hall A',
     imageUrl: 'https://example.com/hamlet.jpg',
     duration: '2h',
     minAge: '12',
@@ -17,7 +17,7 @@ List<Play> plays = [
   Play(
     title: 'Waiting for Godot',
     author: 'Samuel Beckett',
-    hall: 'Théâtre de Babylone',
+    hall: 'Hall B',
     imageUrl: 'https://example.com/waiting_for_godot.jpg',
     duration: '1h45',
     minAge: '14',

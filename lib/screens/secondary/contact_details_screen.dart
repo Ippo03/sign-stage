@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sign_stage/data/constants.dart';
-import 'package:sign_stage/services/launcher_url_services.dart';
+import 'package:sign_stage/services/launcher_url_service.dart';
 import 'package:sign_stage/widgets/custom/custom_map.dart';
 
 class ContactDetailsScreen extends StatelessWidget {
