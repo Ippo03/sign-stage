@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ProgressBarState extends ChangeNotifier {
-  double _progress = 0.0;
-  String _label = '';
-  Color _color = Colors.blue; // Default color
+  int _step = 1;
+  Color _color = Colors.blue; 
 
-  double get progress => _progress;
-  String get label => _label;
+  int get step => _step;
+
   Color get color => _color;
 
   // Private constructor for singleton pattern
@@ -18,10 +17,8 @@ class ProgressBarState extends ChangeNotifier {
   // Factory constructor to provide access to the singleton instance
   factory ProgressBarState() => _instance;
 
-  void updateProgress(double progress, String label, Color color) {
-    _progress = progress;
-    _label = label;
-    _color = color;
+  void updateProgress(int step) {
+    _step = step;
     notifyListeners();
   }
 }

@@ -1,129 +1,162 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/play.dart';
 import 'package:sign_stage/screens/chat/base_screen.dart';
-import 'package:sign_stage/screens/main/payment_screen.dart';
+import 'package:sign_stage/screens/main/seat_selection_screen.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
 
-class BookingScreen extends StatelessWidget {
-  const BookingScreen({super.key, required this.play});
+class BookingScreen extends StatefulWidget {
+  const BookingScreen({
+    super.key,
+    required this.play,
+  });
 
   final Play play;
 
   @override
+  _BookingScreenState createState() => _BookingScreenState();
+}
+
+class _BookingScreenState extends State<BookingScreen> {
+  DateTime selectedDate = DateTime(2024, 6, 8);
+  final List<DateTime> availableDates = [
+    DateTime(2024, 6, 1),
+    DateTime(2024, 6, 8),
+    DateTime(2024, 6, 15),
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    final progressBarState = ProgressBarState(); 
+    final progressBarState = ProgressBarState();
 
     return BaseScreen(
       body: ProgressBarProvider(
         state: progressBarState,
         child: Scaffold(
-          backgroundColor: Colors.grey[200],
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            title: Text(
-              play.title,
-              style: const TextStyle(
-                  fontSize: 20.0, color: Colors.black, fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
+          body: Column(
+            children: [
+              const SizedBox(height: 25.0),
+              const ProgressBar(),
+              _buildTitleSection(),
+              _buildDateSelector(),
+              _buildTimeSlots(progressBarState),
+            ],
           ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ProgressBar(),
-                const SizedBox(height: 20.0),
-                Text(
-                  'Hall ${play.hall}',
-                  style: const TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10.0),
-                const Text(
-                  'Saturday, 8 June 2024, 17:30',
-                  style: TextStyle(fontSize: 14.0, color: Colors.grey),
-                ),
-                const SizedBox(height: 20.0),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Selected Seats:',
-                      style: TextStyle(fontSize: 14.0, color: Colors.black),
-                    ),
-                    Text(
-                      'TOTAL: 40 €',
-                      style: TextStyle(fontSize: 14.0, color: Colors.black),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10.0),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'C5, C6',
-                      style: TextStyle(
-                          fontSize: 14.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20.0),
-                const Image(
-                  image: AssetImage(
-                      'assets/images/seat_map.png'), 
-                  width: double.infinity,
-                  height: 150.0,
-                ),
-                SizedBox(height: 20.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Selected',
-                      style: TextStyle(fontSize: 12.0, color: Colors.green),
-                    ),
-                    Text(
-                      'Reserved',
-                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                    ),
-                    Text(
-                      'Available',
-                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () {
-                    progressBarState.updateProgress(0.5, '', Colors.green);
+        ),
+      ),
+    );
+  }
 
-                    // Handle checkout button press
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentScreen(play: play),
-                      ),
-                    );
-                  },
-                  child: const Text('Checkout'),
-                  // style: ElevatedButton.styleFrom(
-                  //   primary: Colors.blue,
-                  //   onPrimary: Colors.white,
-                  //   minimumSize: Size(double.infinity, 50.0),
-                  // ),
+  Widget _buildTitleSection() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      child: Card(
+        elevation: 4.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "${widget.play.hall}: ${widget.play.title}",
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
+              ),
+              Text(
+                "by ${widget.play.author}",
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateSelector() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          _buildCalendar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCalendar() {
+    return CalendarDatePicker(
+      initialDate: selectedDate,
+      firstDate: DateTime(2024, 6, 1),
+      lastDate: DateTime(2024, 6, 30),
+      onDateChanged: (date) {
+        setState(() {
+          selectedDate = date;
+        });
+      },
+      selectableDayPredicate: (date) {
+        return availableDates.contains(date);
+      },
+    );
+  }
+
+  Widget _buildTimeSlots(ProgressBarState progressBarState) {
+    return Container(
+      padding: const EdgeInsets.all(4.0),
+      child: Column(
+        children: [
+          _buildTimeSlot('17:30', 'few available', 'available', Colors.orange,
+              Colors.green, progressBarState),
+          _buildTimeSlot(
+              '20:30', 'unavailable', 'unavailable', Colors.red, Colors.blue, progressBarState),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeSlot(String time, String seatStatus, String hearingStatus,
+      Color seatColor, Color hearingColor, ProgressBarState progressBarState) {
+    return InkWell(
+      onTap: () {
+        progressBarState.updateProgress(3);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SeatSelectionScreen(
+              play: widget.play,
             ),
           ),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12.0),
+        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+        decoration: BoxDecoration(
+          color: Colors.blueAccent,
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(time,
+                style: const TextStyle(fontSize: 20, color: Colors.white)),
+            Text('Seat status: $seatStatus',
+                style: TextStyle(color: seatColor)),
+            Text('Hearing impaired: $hearingStatus',
+                style: TextStyle(color: hearingColor)),
+          ],
         ),
       ),
     );

@@ -13,14 +13,15 @@ class PaymentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progressBarState = ProgressBarState(); 
+    final progressBarState = ProgressBarState();
+    progressBarState.updateProgress(4); 
     
     return ProgressBarProvider(
       state: progressBarState,
       child: Scaffold(
-        backgroundColor: const Color(0xFF2D2D2D),
+        backgroundColor: Colors.black,
         appBar: AppBar(
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.grey[600],
           title: const Text('Checkout'),
           centerTitle: true,
         ),
@@ -29,6 +30,8 @@ class PaymentScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const ProgressBar(),
+              const SizedBox(height: 5),
               const Text(
                 'Payment Method',
                 style: TextStyle(
@@ -37,7 +40,7 @@ class PaymentScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              ProgressBar(),
+              
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.all(16),
@@ -137,10 +140,10 @@ class PaymentScreen extends StatelessWidget {
                     ),
                     );
                   },
-                  // style: ElevatedButton.styleFrom(
-                  //   primary: Colors.blue,
-                  //   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  // ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  ),
                   child: Text(
                     'Pay Now  40 €',
                     style: TextStyle(

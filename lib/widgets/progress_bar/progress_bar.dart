@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
 
 class ProgressBar extends StatelessWidget {
+  const ProgressBar({super.key});
+
   @override
   Widget build(BuildContext context) {
     final progressBarState = ProgressBarProvider.of(context)?.state;
+    int currentStep = progressBarState?.step ?? 1;
 
     if (progressBarState == null) {
       throw FlutterError(
@@ -12,28 +15,21 @@ class ProgressBar extends StatelessWidget {
       );
     }
 
-    return SizedBox(
-      width: double.infinity,
-      height: 10.0,
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: progressBarState.progress,
-              backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(progressBarState.color),
-            ),
-          ),
-          Material(
-            color: Colors.transparent,
-            child: Text(
-              progressBarState.label,
-              style: const TextStyle(fontSize: 12.0, color: Colors.white),
-            ),
-          ),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _buildStep(Icons.theaters, 1, currentStep),
+        _buildStep(Icons.calendar_today, 2, currentStep),
+        _buildStep(Icons.access_time, 3, currentStep),
+        _buildStep(Icons.payment, 4, currentStep),
+      ],
+    );
+  }
+
+  Widget _buildStep(IconData icon, int step, int currentStep) {
+    return Icon(
+      icon,
+      color: currentStep >= step ? currentStep == step ? Colors.yellow : Colors.green : Colors.grey,
     );
   }
 }
