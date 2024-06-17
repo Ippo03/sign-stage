@@ -1,3 +1,5 @@
+import 'package:sign_stage/models/util/credit_card.dart';
+
 class User {
   // Private constructor
   User._privateConstructor({
@@ -5,6 +7,7 @@ class User {
     required this.email,
     required this.password,
     required this.imageUrl,
+    required this.creditCards,
   });
 
   // The single instance of the class
@@ -16,12 +19,14 @@ class User {
     required String email,
     required String password,
     required String imageUrl,
+    required List<CreditCard> creditCards,
   }) {
     _instance ??= User._privateConstructor(
       username: username,
       email: email,
       password: password,
       imageUrl: imageUrl,
+      creditCards: creditCards,
     );
     return _instance!;
   }
@@ -30,8 +35,9 @@ class User {
   final String email;
   final String password;
   final String imageUrl;
+  final List<CreditCard> creditCards;
 
-  // get the instance
+  // Get the instance
   static User? get instance => _instance;
 
   // Reset the instance (if needed)

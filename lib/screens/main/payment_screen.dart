@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/models/play.dart';
+import 'package:sign_stage/models/main/play.dart';
+import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/screens/main/etickets_screen.dart';
+import 'package:sign_stage/widgets/custom/custom_credit_card.dart';
 import 'package:sign_stage/widgets/custom/custom_text_field.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
@@ -14,8 +16,10 @@ class PaymentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progressBarState = ProgressBarState();
-    progressBarState.updateProgress(4); 
-    
+    progressBarState.updateProgress(4);
+
+    final user = User.instance;
+
     return ProgressBarProvider(
       state: progressBarState,
       child: Scaffold(
@@ -40,57 +44,19 @@ class PaymentScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              
               const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.credit_card, color: Colors.red),
-                        Spacer(),
-                        Text(
-                          '\$120,580.00',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'Card Holder',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      'John Doe',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      '**** **** **** 51446',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+              SizedBox(
+                height: 260,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(width: 10),
+                  itemCount: user!.creditCards.length,
+                  itemBuilder: (context, index) {
+                    return CustomCreditCard(
+                      index: index,
+                    );
+                  },
                 ),
               ),
               const SizedBox(height: 20),
@@ -135,14 +101,16 @@ class PaymentScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     // Show success dialog and navigate to e-tickets screen
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ETicketsScreen(),
-                    ),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ETicketsScreen(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                   ),
                   child: Text(
                     'Pay Now  40 €',
