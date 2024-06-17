@@ -20,7 +20,7 @@ class PlayListItem extends StatelessWidget {
       margin: const EdgeInsets.all(8.0),
       child: Column(
         children: [
-          Image.network(play.imageUrl),
+          Image.asset(play.imageUrl),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(

@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Image.network(
+              Image.asset(
                 'https://via.placeholder.com/150', // Replace with your logo URL
                 height: 150,
               ),
