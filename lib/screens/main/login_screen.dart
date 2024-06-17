@@ -14,7 +14,9 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
   FocusNode usernameFocus = FocusNode();
   FocusNode passwordFocus = FocusNode();
-  bool showError = false;
+  String _usernameError = '';
+  String _passwordError = '';
+  bool _obscureText = true;
 
   @override
   void dispose() {
@@ -48,7 +50,10 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } else {
       setState(() {
-        showError = true;
+        _usernameError = 'Invalid username or email';
+        _passwordError = 'Invalid password';
+        usernameController.clear();
+        passwordController.clear();
       });
     }
   }
@@ -66,7 +71,6 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 Image.asset(
                   'assets/images/logo.png',
-                  height: 100,
                 ),
                 const SizedBox(height: 20),
                 const Text(
@@ -93,27 +97,42 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: 'Enter Your Username / Email',
                     border: const OutlineInputBorder(),
                     filled: true,
-                    fillColor: showError ? Colors.red[50] : Colors.grey[200],
-                    errorBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red),
-                    ),
+                    errorText:
+                        _usernameError.isNotEmpty ? _usernameError : null,
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      _usernameError = '';
+                    });
+                  },
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: passwordController,
                   focusNode: passwordFocus,
-                  obscureText: true,
+                  obscureText: _obscureText,
                   decoration: InputDecoration(
                     hintText: 'Enter Your Password',
                     border: const OutlineInputBorder(),
                     filled: true,
-                    fillColor: showError ? Colors.red[50] : Colors.grey[200],
-                    errorBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscureText
+                          ? Icons.visibility_off
+                          : Icons.visibility),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
                     ),
-                    suffixIcon: const Icon(Icons.visibility_off),
+                    errorText:
+                        _passwordError.isNotEmpty ? _passwordError : null,
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      _passwordError = '';
+                    });
+                  },
                 ),
                 const SizedBox(height: 10),
                 Align(
@@ -147,6 +166,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                const Row(
+                  children: [
+                    Expanded(
+                      child: Divider(color: Colors.grey),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text('Or'),
+                    ),
+                    Expanded(
+                      child: Divider(color: Colors.grey),
+                    ),
+                  ],
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -162,49 +195,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 10),
-                const Row(
-                  children: [
-                    Expanded(
-                      child: Divider(color: Colors.grey),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text('Or'),
-                    ),
-                    Expanded(
-                      child: Divider(color: Colors.grey),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Login with Facebook logic
-                  },
-                  icon: const Icon(Icons.facebook, color: Colors.white),
-                  label: const Text(
-                    'Login with Facebook',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[800],
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // Login with Google logic
-                  },
-                  icon: const Icon(Icons.g_translate, color: Colors.black),
-                  label: const Text('Login with Google'),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
                 ),
               ],
             ),
