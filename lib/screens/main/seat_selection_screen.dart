@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/models/play.dart';
+import 'package:sign_stage/models/main/play.dart';
 import 'package:sign_stage/screens/chat/base_screen.dart';
 import 'package:sign_stage/screens/main/payment_screen.dart';
 import 'package:sign_stage/widgets/custom/custom_seat_layout.dart';

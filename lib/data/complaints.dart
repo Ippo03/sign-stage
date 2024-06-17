@@ -1,4 +1,4 @@
-import 'package:sign_stage/models/complaint.dart';
+import 'package:sign_stage/models/main/complaint.dart';
 
 List<Complaint> complaints = [
   const Complaint(

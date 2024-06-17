@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/models/play.dart';
+import 'package:sign_stage/models/main/play.dart';
 import 'package:sign_stage/screens/chat/base_screen.dart';
 import 'package:sign_stage/screens/main/seat_selection_screen.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';

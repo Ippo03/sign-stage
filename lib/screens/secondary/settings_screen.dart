@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/models/user.dart';
+import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/screens/main/etickets_screen.dart';
 import 'package:sign_stage/screens/main/login_screen.dart';
 import 'package:sign_stage/screens/secondary/contact_details_screen.dart';

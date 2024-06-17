@@ -1,4 +1,4 @@
-import 'package:sign_stage/models/play.dart';
+import 'package:sign_stage/models/main/play.dart';
 
 List<Play> plays = [
   Play(

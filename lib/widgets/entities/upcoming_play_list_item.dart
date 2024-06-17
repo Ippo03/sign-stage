@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/models/play.dart';
+import 'package:sign_stage/models/main/play.dart';
 
 class UpcomingPlayListItem extends StatelessWidget {
   const UpcomingPlayListItem({

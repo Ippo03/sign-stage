@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/data/complaints.dart';
-import 'package:sign_stage/models/complaint.dart';
+import 'package:sign_stage/models/main/complaint.dart';
 
 class MakeComplaintsScreen extends StatefulWidget {
   const MakeComplaintsScreen({super.key});
