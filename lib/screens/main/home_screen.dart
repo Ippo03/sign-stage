@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             children: [
               Image.asset(
-                'https://via.placeholder.com/150', // Replace with your logo URL
+                'assets/images/logo.png',
                 height: 150,
               ),
               const Padding(

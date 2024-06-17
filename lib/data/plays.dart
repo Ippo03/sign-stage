@@ -5,7 +5,7 @@ List<Play> plays = [
     title: 'Hamlet',
     author: 'William Shakespeare',
     hall: 'Hall A',
-    imageUrl: 'https://example.com/hamlet.jpg',
+    imageUrl: 'assets/images/hamlet.jpg',
     duration: '2h',
     minAge: '12',
     description: 'A tragedy by William Shakespeare.',

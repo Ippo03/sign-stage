@@ -24,7 +24,7 @@ class PlayListItem extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Hall ${play.hall}: ${play.title} by ${play.author}',
+              '${play.hall}: ${play.title} by ${play.author}',
               style: const TextStyle(fontSize: 18),
             ),
           ),
