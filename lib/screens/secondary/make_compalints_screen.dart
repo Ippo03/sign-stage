@@ -76,14 +76,22 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[800],
       appBar: AppBar(
-        title: const Text(
-          'Make Complaints',
-          style: TextStyle(color: Colors.white),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
         ),
+        title: const Text(
+          'Make Complaint',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
         backgroundColor: Colors.grey[800],
       ),
-      backgroundColor: Colors.grey[800],
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

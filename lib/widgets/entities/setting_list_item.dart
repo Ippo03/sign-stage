@@ -46,7 +46,6 @@ class SettingsListItem extends StatelessWidget {
       ),
       onTap: () {
         if (navigateTo.runtimeType == LoginScreen) {
-          print('LoginScreen');
           Navigator.of(context).popUntil((route) => route.isFirst); 
           Navigator.pushReplacement(
             context,

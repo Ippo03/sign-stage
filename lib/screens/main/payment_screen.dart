@@ -26,9 +26,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
   final user = User.instance;
 
   final TextEditingController emailController = TextEditingController();
-  final TextEditingController cardholderNameController = TextEditingController();
+  final TextEditingController cardholderNameController =
+      TextEditingController();
   final TextEditingController cardNumberController = TextEditingController();
-  final TextEditingController expirationDateController = TextEditingController();
+  final TextEditingController expirationDateController =
+      TextEditingController();
   final TextEditingController cvvController = TextEditingController();
 
   @override
@@ -53,7 +55,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Card Selected'),
-          content: const Text('Do you want to fill the payment details with this card?'),
+          content: const Text(
+              'Do you want to fill the payment details with this card?'),
           actions: [
             TextButton(
               child: const Text('No'),
@@ -85,11 +88,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return ProgressBarProvider(
       state: progressBarState,
       child: Scaffold(
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          backgroundColor: Colors.grey[600],
-          title: const Text('Checkout'),
-          centerTitle: true,
+        backgroundColor: Colors.grey[800],
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(10),
+          child: AppBar(
+            backgroundColor: Colors.grey[800],
+            automaticallyImplyLeading: false,
+          ),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -98,16 +103,27 @@ class _PaymentScreenState extends State<PaymentScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const ProgressBar(),
-                const SizedBox(height: 5),
+                const SizedBox(height: 20),
+                const Center(
+                  child: Text(
+                    'Checkout',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 const Text(
                   'Payment Method',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 SizedBox(
                   height: 260,
                   child: ListView.separated(
@@ -128,11 +144,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   'Payment Details',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 CustomTextField(
                   label: 'Your Email',
                   controller: emailController,

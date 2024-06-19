@@ -8,11 +8,26 @@ class ETicketsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2D2D2D),
+      backgroundColor: Colors.grey[800],
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('E-Ticket'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+            (route) => false,
+          ),
+        ),
+        title: const Text(
+          'My E-Tickets',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         centerTitle: true,
+        backgroundColor: Colors.grey[800],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -50,7 +65,8 @@ class ETicketsScreen extends StatelessWidget {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
                 child: const Text(
                   'Download E-Ticket',
@@ -67,7 +83,8 @@ class ETicketsScreen extends StatelessWidget {
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
                 child: const Text(
                   'Cancel E-Ticket',
@@ -78,28 +95,9 @@ class ETicketsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Show success dialog and navigate to e-tickets screen
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => HomeScreen(),
-                  ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                ),
-                child: const Text(
-                  'Back to Home',
-                  ),
-                ),
-              ),
-            ],    
-          ),
+          ],
         ),
+      ),
     );
   }
 }

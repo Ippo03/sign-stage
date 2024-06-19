@@ -16,26 +16,42 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseScreen(
       body: Scaffold(
-        appBar: AppBar(
-          title: const Text('Sign Stage Theatre For All'),
-          leading: IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SettingsScreen(),
-                ),
-              );
-            },
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(0), 
+          child: AppBar(
+            backgroundColor: Colors.grey[800],
+            automaticallyImplyLeading: false, 
           ),
         ),
+        backgroundColor: Colors.grey[800],
         body: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/images/logo.png',
-                height: 150,
+              Stack(
+                children: [
+                  Image.asset(
+                    'assets/images/logo.png',
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.fitWidth, 
+                  ),
+                  Positioned(
+                    top: 16.0,
+                    left: 16.0,
+                    child: IconButton(
+                      icon: const Icon(Icons.settings),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SettingsScreen(),
+                          ),
+                        );
+                      },
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
               const Padding(
                 padding: EdgeInsets.all(8.0),

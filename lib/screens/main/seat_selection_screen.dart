@@ -31,9 +31,13 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
       body: ProgressBarProvider(
         state: progressBarState,
         child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Select your seat'),
-            backgroundColor: Colors.blueGrey,
+          backgroundColor: Colors.grey[800],
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(10),
+            child: AppBar(
+              backgroundColor: Colors.grey[800],
+              automaticallyImplyLeading: false,
+            ),
           ),
           body: Column(
             children: [
@@ -116,4 +120,3 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
     );
   }
 }
-

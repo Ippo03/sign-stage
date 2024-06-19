@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sign_stage/models/main/play.dart';
 import 'package:sign_stage/screens/chat/base_screen.dart';
 import 'package:sign_stage/screens/main/seat_selection_screen.dart';
+import 'package:sign_stage/widgets/custom/custom_play_card.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
@@ -34,48 +35,20 @@ class _BookingScreenState extends State<BookingScreen> {
       body: ProgressBarProvider(
         state: progressBarState,
         child: Scaffold(
+          backgroundColor: Colors.grey[800],
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(10),
+            child: AppBar(
+              backgroundColor: Colors.grey[800],
+              automaticallyImplyLeading: false,
+            ),
+          ),
           body: Column(
             children: [
-              const SizedBox(height: 25.0),
               const ProgressBar(),
-              _buildTitleSection(),
+              CustomPlayCard(play: widget.play),
               _buildDateSelector(),
               _buildTimeSlots(progressBarState),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTitleSection() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16.0),
-      child: Card(
-        elevation: 4.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${widget.play.hall}: ${widget.play.title}",
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "by ${widget.play.author}",
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
-                ),
-              ),
             ],
           ),
         ),
@@ -117,8 +90,8 @@ class _BookingScreenState extends State<BookingScreen> {
         children: [
           _buildTimeSlot('17:30', 'few available', 'available', Colors.orange,
               Colors.green, progressBarState),
-          _buildTimeSlot(
-              '20:30', 'unavailable', 'unavailable', Colors.red, Colors.blue, progressBarState),
+          _buildTimeSlot('20:30', 'unavailable', 'unavailable', Colors.red,
+              Colors.blue, progressBarState),
         ],
       ),
     );

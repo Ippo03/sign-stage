@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sign_stage/models/main/play.dart';
 import 'package:sign_stage/screens/chat/base_screen.dart';
 import 'package:sign_stage/screens/main/booking_screen.dart';
+import 'package:sign_stage/widgets/custom/custom_play_card.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
 
 class PlayDetailsScreen extends StatelessWidget {
@@ -15,75 +16,87 @@ class PlayDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progressBarState = ProgressBarState();
-    
+
     return BaseScreen(
       body: Scaffold(
-        appBar: AppBar(
-          title: Text('${play.title} Details'),
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
+          child: AppBar(
+            backgroundColor: Colors.grey[800],
+            automaticallyImplyLeading: false,
+          ),
         ),
+        backgroundColor: Colors.grey[800],
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(0.0),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.theaters, size: 40),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Hall A: ${play.title}',
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                CustomPlayCard(play: play),
+                Center(
+                  child: Text(
+                    'Duration: ${play.duration} / Audience: ${play.minAge} years +',
+                    style: const TextStyle(fontSize: 19, color: Colors.yellow),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Image.asset(
+                      play.imageUrl,
+                      width: 400,
+                      height: 225,
+                      fit: BoxFit.cover,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'by ${play.author}',
-                  style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Duration: ${play.duration} / Audience: ${play.minAge} years +',
-                  style: const TextStyle(fontSize: 16),
+                  ),
                 ),
                 const SizedBox(height: 20),
-                Image.asset(
-                  play.imageUrl,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  play.description,
-                  style: const TextStyle(fontSize: 16),
+                Center(
+                  child: Text(
+                    play.description,
+                    style: const TextStyle(
+                        fontSize: 16, color: Colors.yellowAccent),
+                  ),
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  play.additionalInfo,
-                  style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                Center(
+                  child: Text(
+                    play.additionalInfo,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 20),
-                const Text(
-                  'Cast and production team',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                const Center(
+                  child: Text(
+                    'Cast and production team',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  play.cast,
-                  style: const TextStyle(fontSize: 16),
+                Center(
+                  child: Text(
+                    play.cast,
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
                 const SizedBox(height: 20),
-                Text(
-                  'Regular entry: ${play.regularPrice} €, Disabled people: ${play.discountedPrice} €',
-                  style: const TextStyle(fontSize: 16),
+                Center(
+                  child: Text(
+                    'Regular entry: ${play.regularPrice} €, Disabled people: ${play.discountedPrice} €',
+                    style: const TextStyle(fontSize: 16),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
                       progressBarState.updateProgress(2);
-                      
+
                       // Add your onPressed code here!
                       Navigator.of(context).push(
                         MaterialPageRoute(
