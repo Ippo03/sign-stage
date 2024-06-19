@@ -36,16 +36,33 @@ class _BookingScreenState extends State<BookingScreen> {
         state: progressBarState,
         child: Scaffold(
           backgroundColor: Colors.grey[800],
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(10),
-            child: AppBar(
-              backgroundColor: Colors.grey[800],
-              automaticallyImplyLeading: false,
+          appBar: AppBar(
+            backgroundColor: Colors.grey[800],
+            elevation: 0,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(0.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                    child: IconButton(
+                      icon:
+                          const Icon(Icons.arrow_back_ios, color: Colors.white),
+                      onPressed: () {
+                        progressBarState.updateProgress(1);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 20.0),
+                  const ProgressBar(),
+                ],
+              ),
             ),
           ),
           body: Column(
             children: [
-              const ProgressBar(),
               CustomPlayCard(play: widget.play),
               _buildDateSelector(),
               _buildTimeSlots(progressBarState),
@@ -68,18 +85,22 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Widget _buildCalendar() {
-    return CalendarDatePicker(
-      initialDate: selectedDate,
-      firstDate: DateTime(2024, 6, 1),
-      lastDate: DateTime(2024, 6, 30),
-      onDateChanged: (date) {
-        setState(() {
-          selectedDate = date;
-        });
-      },
-      selectableDayPredicate: (date) {
-        return availableDates.contains(date);
-      },
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      color: Colors.white,
+      child: CalendarDatePicker(
+        initialDate: selectedDate,
+        firstDate: DateTime(2024, 6, 1),
+        lastDate: DateTime(2024, 6, 30),
+        onDateChanged: (date) {
+          setState(() {
+            selectedDate = date;
+          });
+        },
+        selectableDayPredicate: (date) {
+          return availableDates.contains(date);
+        },
+      ),
     );
   }
 

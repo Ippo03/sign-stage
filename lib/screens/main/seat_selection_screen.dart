@@ -9,9 +9,9 @@ import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
 
 class SeatSelectionScreen extends StatefulWidget {
   const SeatSelectionScreen({
-    super.key,
+    Key? key,
     required this.play,
-  });
+  }) : super(key: key);
 
   final Play play;
 
@@ -32,67 +32,86 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
         state: progressBarState,
         child: Scaffold(
           backgroundColor: Colors.grey[800],
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(10),
-            child: AppBar(
-              backgroundColor: Colors.grey[800],
-              automaticallyImplyLeading: false,
+          appBar: AppBar(
+            backgroundColor: Colors.grey[800],
+            elevation: 0,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(0.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                      onPressed: () {
+                        progressBarState.updateProgress(2);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 20.0),
+                  const ProgressBar(),
+                ],
+              ),
             ),
           ),
           body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ProgressBar(),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       widget.play.title,
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Hall A',
-                      style: const TextStyle(fontSize: 18),
+                      widget.play.hall,
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Saturday, 8 June 2024, 17:30',
-                      style: const TextStyle(fontSize: 18),
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Selected Seats: ${selectedSeats.join(', ')}',
-                      style: const TextStyle(fontSize: 16),
+                      'Selected Seats: ${selectedSeats.isEmpty ? 'None' : selectedSeats.join(', ')}',
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'TOTAL: ${selectedSeats.length * 20} €',
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ],
                 ),
               ),
               Expanded(
-                child: CustomSeatLayout(
-                  rows: 6,
-                  cols: 8,
-                  selectedSeats: selectedSeats,
-                  onSeatSelected: (String seat) {
-                    setState(() {
-                      if (selectedSeats.contains(seat)) {
-                        selectedSeats.remove(seat);
-                      } else {
-                        selectedSeats.add(seat);
-                      }
-                    });
-                  },
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CustomSeatLayout(
+                    rows: 6,
+                    cols: 8,
+                    selectedSeats: selectedSeats,
+                    onSeatSelected: (String seat) {
+                      setState(() {
+                        if (selectedSeats.contains(seat)) {
+                          selectedSeats.remove(seat);
+                        } else {
+                          selectedSeats.add(seat);
+                        }
+                      });
+                    },
+                  ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: selectedSeats.isNotEmpty
                       ? () {
@@ -100,8 +119,7 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
 
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  PaymentScreen(play: widget.play),
+                              builder: (context) => PaymentScreen(play: widget.play),
                             ),
                           );
                         }

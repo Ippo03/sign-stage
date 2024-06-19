@@ -74,12 +74,13 @@ class _ChatScreenState extends State<ChatScreen> {
     await Future.delayed(const Duration(seconds: 1));
 
     setState(() {
-      _messages.add({'message': 'Waiting for your response...', 'isReceived': true});
+      _messages
+          .add({'message': 'Waiting for your response...', 'isReceived': true});
     });
 
     // Send message to server and fetch response
     final response = await http.post(
-      Uri.parse('http://192.168.250.61:5000/send_message'),
+      Uri.parse('https://6c8a-34-168-178-106.ngrok-free.app/send_message'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'message': _message}),
     );
@@ -110,13 +111,31 @@ class _ChatScreenState extends State<ChatScreen> {
     return ProgressBarProvider(
       state: progressBarState,
       child: Scaffold(
-        backgroundColor: Colors.grey[900],
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0.0,
-          title: const ProgressBar(),
-          centerTitle: true,
-        ),
+          backgroundColor: Colors.grey[800],
+          appBar: AppBar(
+            backgroundColor: Colors.grey[800],
+            elevation: 0,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(0.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                    child: IconButton(
+                      icon:
+                          const Icon(Icons.arrow_back_ios, color: Colors.white),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 20.0),
+                  const ProgressBar(),
+                ],
+              ),
+            ),
+          ),
         body: GestureDetector(
           onPanDown: (details) {
             initialPosition = details.localPosition;
@@ -152,7 +171,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   return messageBubble(
                     isReceived: _messages[index]['isReceived'],
                     message: _messages[index]['message'],
-                    showIcon: index == _messages.length - 1 ? _responseCompleted : false,
+                    showIcon: index == _messages.length - 1
+                        ? _responseCompleted
+                        : false,
                   );
                 },
               ),
@@ -195,7 +216,10 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget messageBubble({required bool isReceived, required String message, required bool showIcon}) {
+  Widget messageBubble(
+      {required bool isReceived,
+      required String message,
+      required bool showIcon}) {
     return Row(
       mainAxisAlignment:
           isReceived ? MainAxisAlignment.start : MainAxisAlignment.end,
