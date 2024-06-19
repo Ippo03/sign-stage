@@ -63,6 +63,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/icons/assistant.png
+    - assets/icons/profile_pic.png
     - assets/images/logo.png
     - assets/images/hamlet.jpg
     - assets/images/waiting_for_godot.jpg

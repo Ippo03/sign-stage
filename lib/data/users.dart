@@ -8,7 +8,11 @@ List<User> users = [
     username: 'ippo',
     email: 'ippo@example.com',
     password: 'ippo123',
-    imageUrl: 'assets/images/ippo.jpg',
+    imageUrl: 'assets/icons/profile_pic.png',
+    activities: [
+      'Play Hunter',
+      'Theater Lover',
+    ],
     creditCards: [
       CreditCard(
         color: CreditCard.getRandomColor(),

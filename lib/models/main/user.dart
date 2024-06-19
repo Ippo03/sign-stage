@@ -7,6 +7,7 @@ class User {
     required this.email,
     required this.password,
     required this.imageUrl,
+    required this.activities,
     required this.creditCards,
   });
 
@@ -19,6 +20,7 @@ class User {
     required String email,
     required String password,
     required String imageUrl,
+    required List<String> activities,
     required List<CreditCard> creditCards,
   }) {
     _instance ??= User._privateConstructor(
@@ -26,6 +28,7 @@ class User {
       email: email,
       password: password,
       imageUrl: imageUrl,
+      activities: activities,
       creditCards: creditCards,
     );
     return _instance!;
@@ -35,6 +38,7 @@ class User {
   final String email;
   final String password;
   final String imageUrl;
+  final List<String> activities;
   final List<CreditCard> creditCards;
 
   // Get the instance
