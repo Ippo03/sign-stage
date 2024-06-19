@@ -41,10 +41,7 @@ class CreditCardsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(.0),
             child: CustomCreditCard(
                 index: index,
-                onCardSelected: (selectedCard) {
-                  // Handle card selection as needed
-                  print('Selected card on tap: ${selectedCard.cardNumber}');
-                },
+                onCardSelected: (selectedCard) {},
               ),
           );
         },
