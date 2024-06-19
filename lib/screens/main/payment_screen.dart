@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sign_stage/models/main/play.dart';
 import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/models/util/credit_card.dart';
-import 'package:sign_stage/screens/main/etickets_screen.dart';
 import 'package:sign_stage/widgets/custom/custom_credit_card.dart';
+import 'package:sign_stage/widgets/custom/custom_pop_up.dart';
 import 'package:sign_stage/widgets/custom/custom_text_field.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
@@ -11,9 +11,9 @@ import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({
-    super.key,
+    Key? key,
     required this.play,
-  });
+  }) : super(key: key);
 
   final Play play;
 
@@ -83,17 +83,42 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  bool _validateFields() {
+    return emailController.text.isNotEmpty &&
+        cardholderNameController.text.isNotEmpty &&
+        cardNumberController.text.isNotEmpty &&
+        expirationDateController.text.isNotEmpty &&
+        cvvController.text.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ProgressBarProvider(
       state: progressBarState,
       child: Scaffold(
         backgroundColor: Colors.grey[800],
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(10),
-          child: AppBar(
-            backgroundColor: Colors.grey[800],
-            automaticallyImplyLeading: false,
+        appBar: AppBar(
+          backgroundColor: Colors.grey[800],
+          elevation: 0,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(0.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                    onPressed: () {
+                      progressBarState.updateProgress(3);
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 20.0),
+                const ProgressBar(),
+              ],
+            ),
           ),
         ),
         body: Padding(
@@ -102,8 +127,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ProgressBar(),
-                const SizedBox(height: 20),
                 const Center(
                   child: Text(
                     'Checkout',
@@ -186,14 +209,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 const SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Show success dialog and navigate to e-tickets screen
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const ETicketsScreen(),
-                        ),
-                      );
-                    },
+                    onPressed: _validateFields()
+                        ? () {
+                            setState(() {
+                              progressBarState.updateProgress(5);
+                            });
+
+                            // Show success dialog
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return const CustomPopUp(
+                                  success: true,
+                                );
+                              },
+                            );
+                          }
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       padding: const EdgeInsets.symmetric(

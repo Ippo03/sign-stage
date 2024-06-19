@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/screens/main/home_screen.dart';
+import 'package:sign_stage/widgets/custom/custom_pop_up.dart';
 import 'package:sign_stage/widgets/entities/eticket_item.dart';
 
 class ETicketsScreen extends StatelessWidget {
@@ -80,7 +81,39 @@ class ETicketsScreen extends StatelessWidget {
             const SizedBox(height: 10),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Cancel E-Ticket'),
+                        content: const Text(
+                          'Are you sure you want to cancel this E-Ticket?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('No'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const CustomPopUp(success: false);
+                                },
+                              );
+                            },
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   padding:
