@@ -1,6 +1,9 @@
+import 'package:barcode/barcode.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/main/play.dart';
+import 'package:sign_stage/models/main/ticket.dart';
 import 'package:sign_stage/models/main/user.dart';
+import 'package:sign_stage/models/util/booking_info.dart';
 import 'package:sign_stage/models/util/credit_card.dart';
 import 'package:sign_stage/widgets/custom/custom_credit_card.dart';
 import 'package:sign_stage/widgets/custom/custom_pop_up.dart';
@@ -8,14 +11,17 @@ import 'package:sign_stage/widgets/custom/custom_text_field.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
+import 'package:uuid/uuid.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({
-    Key? key,
+    super.key,
     required this.play,
-  }) : super(key: key);
+    required this.bookingInfo,
+  });
 
   final Play play;
+  final BookingInfo bookingInfo;
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -127,17 +133,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
-                  child: Text(
-                    'Checkout',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
                 const Text(
                   'Payment Method',
                   style: TextStyle(
@@ -215,6 +210,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               progressBarState.updateProgress(5);
                             });
 
+                            Ticket ticket = Ticket(
+                              id: const Uuid().v4(),
+                              play: widget.play,
+                              bookingInfo: widget.bookingInfo,
+                              status: 'Successful',
+                              barcode: Barcode.code128(),
+                            );
+
+                            user!.tickets.add(ticket);
+
                             // Show success dialog
                             showDialog(
                               context: context,
@@ -231,9 +236,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 50, vertical: 15),
                     ),
-                    child: const Text(
-                      'Pay Now  40 €',
-                      style: TextStyle(
+                    child: Text(
+                      'Pay Now ${widget.bookingInfo.totalPrice} €',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                       ),

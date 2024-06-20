@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/main/play.dart';
+import 'package:sign_stage/models/util/booking_info.dart';
 import 'package:sign_stage/screens/chat/base_screen.dart';
 import 'package:sign_stage/screens/main/seat_selection_screen.dart';
 import 'package:sign_stage/widgets/custom/custom_play_card.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({
@@ -61,12 +63,14 @@ class _BookingScreenState extends State<BookingScreen> {
               ),
             ),
           ),
-          body: Column(
-            children: [
-              CustomPlayCard(play: widget.play),
-              _buildDateSelector(),
-              _buildTimeSlots(progressBarState),
-            ],
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                CustomPlayCard(play: widget.play),
+                _buildDateSelector(),
+                _buildTimeSlots(progressBarState),
+              ],
+            ),
           ),
         ),
       ),
@@ -86,20 +90,44 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _buildCalendar() {
     return Container(
+      height: 400,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.0),
+        color: Colors.white,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      color: Colors.white,
-      child: CalendarDatePicker(
-        initialDate: selectedDate,
-        firstDate: DateTime(2024, 6, 1),
-        lastDate: DateTime(2024, 6, 30),
-        onDateChanged: (date) {
+      child: TableCalendar(
+        focusedDay: widget.play.availableDates.entries.first.key,
+        firstDay: widget.play.availableDates.entries.first.key,
+        lastDay: widget.play.availableDates.entries.last.key,
+        calendarFormat: CalendarFormat.month,
+        onFormatChanged: (format) {
+          // Handle format changes if needed
+        },
+        onDaySelected: (selectedDay, focusedDay) {
           setState(() {
-            selectedDate = date;
+            print('Selected Date: $selectedDay');
+            selectedDate = selectedDay;
           });
         },
-        selectableDayPredicate: (date) {
-          return availableDates.contains(date);
+        selectedDayPredicate: (day) {
+          return isSameDay(selectedDate, day);
         },
+        headerStyle: HeaderStyle(
+          titleCentered: true,
+          formatButtonVisible: false,
+        ),
+        calendarStyle: CalendarStyle(
+          todayDecoration: BoxDecoration(
+            color: Colors.blueAccent,
+            shape: BoxShape.circle,
+          ),
+          selectedDecoration: BoxDecoration(
+            color: Colors.blueAccent.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          selectedTextStyle: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
@@ -109,32 +137,42 @@ class _BookingScreenState extends State<BookingScreen> {
       padding: const EdgeInsets.all(4.0),
       child: Column(
         children: [
-          _buildTimeSlot('17:30', 'few available', 'available', Colors.orange,
-              Colors.green, progressBarState),
-          _buildTimeSlot('20:30', 'unavailable', 'unavailable', Colors.red,
-              Colors.blue, progressBarState),
+          _buildTimeSlot(widget.play.afternoon, progressBarState),
+          _buildTimeSlot(widget.play.night, progressBarState),
         ],
       ),
     );
   }
 
-  Widget _buildTimeSlot(String time, String seatStatus, String hearingStatus,
-      Color seatColor, Color hearingColor, ProgressBarState progressBarState) {
+  Widget _buildTimeSlot(String time, ProgressBarState progressBarState) {
+    final seatColor = widget.play.ticketStatusForDate(selectedDate) == 'available'
+        ? Colors.green
+        : Colors.red;
+      
+    final hearingStatus = widget.play.hearingImpaired ? 'Yes' : 'No';
+
     return InkWell(
       onTap: () {
         progressBarState.updateProgress(3);
+
+        BookingInfo info = BookingInfo(
+          play: widget.play,
+          selectedDate: selectedDate,
+          selectedTime: time,
+        );
 
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => SeatSelectionScreen(
               play: widget.play,
+              bookingInfo: info,
             ),
           ),
         );
       },
       child: Container(
-        width: double.infinity,
+        width: 325,
         padding: const EdgeInsets.all(12.0),
         margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
         decoration: BoxDecoration(
@@ -144,12 +182,18 @@ class _BookingScreenState extends State<BookingScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(time,
-                style: const TextStyle(fontSize: 20, color: Colors.white)),
-            Text('Seat status: $seatStatus',
-                style: TextStyle(color: seatColor)),
-            Text('Hearing impaired: $hearingStatus',
-                style: TextStyle(color: hearingColor)),
+            Text(
+              time,
+              style: TextStyle(fontSize: 20, color: Colors.grey[800]),
+            ),
+            Text(
+              'Seat status: ${widget.play.ticketStatusForDate(selectedDate)}',
+              style: TextStyle(color: seatColor),
+            ),
+            Text(
+              'Hearing impaired: $hearingStatus',
+              style: TextStyle(color: Colors.white),
+            ),
           ],
         ),
       ),

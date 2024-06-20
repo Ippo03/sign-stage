@@ -1,13 +1,26 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/screens/main/home_screen.dart';
 import 'package:sign_stage/widgets/custom/custom_pop_up.dart';
 import 'package:sign_stage/widgets/entities/eticket_item.dart';
 
-class ETicketsScreen extends StatelessWidget {
+class ETicketsScreen extends StatefulWidget {
   const ETicketsScreen({super.key});
 
   @override
+  _ETicketsScreenState createState() => _ETicketsScreenState();
+}
+
+class _ETicketsScreenState extends State<ETicketsScreen> {
+  final user = User.instance;
+  final CarouselController _carouselController = CarouselController();
+  int _currentIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
+    print(' Tickets len ${user!.tickets.length}');
+
     return Scaffold(
       backgroundColor: Colors.grey[800],
       appBar: AppBar(
@@ -52,22 +65,53 @@ class ETicketsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+            if (user!.tickets.length > 1)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => _carouselController.previousPage(),
+                  ),
+                  Expanded(
+                    child: CarouselSlider(
+                      items: user!.tickets
+                          .map((ticket) => ETicketItem(ticket: user!.tickets[_currentIndex]))
+                          .toList(),
+                      carouselController: _carouselController,
+                      options: CarouselOptions(
+                        height: 400,
+                        enlargeCenterPage: true,
+                        onPageChanged: (index, reason) {
+                          setState(() {
+                            _currentIndex = index;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward, color: Colors.white),
+                    onPressed: () => _carouselController.nextPage(),
+                  ),
+                ],
+              )
+            else if (user!.tickets.length == 1)
+              ETicketItem(ticket: user!.tickets[0])
+            else
+              const Center(
+                child: Text(
+                  'No tickets available',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-              child: ETicketItem(),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Center(
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
                 child: const Text(
                   'Download E-Ticket',
@@ -100,6 +144,9 @@ class ETicketsScreen extends StatelessWidget {
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop();
+
+                              user!.tickets.removeAt(_currentIndex);
+                              
                               showDialog(
                                 context: context,
                                 builder: (context) {
@@ -116,8 +163,7 @@ class ETicketsScreen extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
                 child: const Text(
                   'Cancel E-Ticket',

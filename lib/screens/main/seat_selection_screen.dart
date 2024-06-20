@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/models/main/play.dart';
+import 'package:sign_stage/models/util/booking_info.dart';
 import 'package:sign_stage/screens/chat/base_screen.dart';
 import 'package:sign_stage/screens/main/payment_screen.dart';
 import 'package:sign_stage/widgets/custom/custom_seat_layout.dart';
@@ -8,12 +9,11 @@ import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
 
 class SeatSelectionScreen extends StatefulWidget {
-  const SeatSelectionScreen({
-    Key? key,
-    required this.play,
-  }) : super(key: key);
+  const SeatSelectionScreen(
+      {super.key, required this.play, required this.bookingInfo});
 
   final Play play;
+  final BookingInfo bookingInfo;
 
   @override
   _SeatSelectionScreenState createState() => _SeatSelectionScreenState();
@@ -21,6 +21,7 @@ class SeatSelectionScreen extends StatefulWidget {
 
 class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
   List<String> selectedSeats = [];
+  int total = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +44,8 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                      icon:
+                          const Icon(Icons.arrow_back_ios, color: Colors.white),
                       onPressed: () {
                         progressBarState.updateProgress(2);
                         Navigator.pop(context);
@@ -66,16 +68,14 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                   children: [
                     Text(
                       widget.play.title,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      widget.play.hall,
-                      style: const TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Saturday, 8 June 2024, 17:30',
+                      widget.bookingInfo.fullDate,
                       style: const TextStyle(fontSize: 18, color: Colors.white),
                     ),
                     const SizedBox(height: 16),
@@ -85,7 +85,7 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'TOTAL: ${selectedSeats.length * 20} €',
+                      'Total: ${selectedSeats.length * widget.play.regularTickets.price} €',
                       style: const TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ],
@@ -95,8 +95,8 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: CustomSeatLayout(
-                    rows: 6,
-                    cols: 8,
+                    rows: widget.play.hall == 'Hall A' ? 5 : 6,
+                    cols: widget.play.hall == 'Hall A' ? 7 : 8,
                     selectedSeats: selectedSeats,
                     onSeatSelected: (String seat) {
                       setState(() {
@@ -107,6 +107,7 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                         }
                       });
                     },
+                    play: widget.play,
                   ),
                 ),
               ),
@@ -117,9 +118,17 @@ class _SeatSelectionScreenState extends State<SeatSelectionScreen> {
                       ? () {
                           progressBarState.updateProgress(4);
 
+                          widget.bookingInfo.setSeats(selectedSeats);
+                          widget.bookingInfo.setTotalPrice(
+                              selectedSeats.length *
+                                  widget.play.regularTickets.price);
+
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => PaymentScreen(play: widget.play),
+                              builder: (context) => PaymentScreen(
+                                play: widget.play,
+                                bookingInfo: widget.bookingInfo,
+                              ),
                             ),
                           );
                         }
