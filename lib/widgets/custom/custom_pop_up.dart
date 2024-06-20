@@ -58,7 +58,7 @@ class CustomPopUp extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 69, 56, 56),
+                          color: Colors.white,
                           decoration: TextDecoration.none, 
                         ),
                         textAlign: TextAlign.center,
@@ -81,7 +81,7 @@ class CustomPopUp extends StatelessWidget {
                             Navigator.of(context).pop();
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                builder: (context) => const ETicketsScreen(),
+                                builder: (context) => success ?  const ETicketsScreen() : HomeScreen(),
                               ),
                             );
                           },
@@ -93,9 +93,9 @@ class CustomPopUp extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 12.0, horizontal: 24.0),
                           ),
-                          child: const Text(
-                            'See E-Ticket',
-                            style: TextStyle(
+                          child: Text(
+                            success ? 'See E-Ticket' : 'Back to Home',
+                            style: const TextStyle(
                               fontSize: 20,
                               color: Colors.white,
                               decoration: TextDecoration.none,
