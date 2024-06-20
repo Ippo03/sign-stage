@@ -22,7 +22,20 @@ class PlayListItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(play.imageUrl),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: SizedBox(
+                height: 150,
+                width: double.infinity,
+                child: Image.asset(
+                  play.imageUrl,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -37,13 +50,15 @@ class PlayListItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8.0),
-                Text(
-                  'Starting: ${play.duration}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                  ),
-                ),
+                // Text(
+                //   'Starting: ${play.runtime}',
+                //   style: const TextStyle(
+                //     fontSize: 14,
+                //     color: Colors.white,
+                //   ),
+                // ),
+                if (play.hearingImpaired)
+                  const Icon(Icons.hearing, color: Colors.blue),
               ],
             ),
           ),
@@ -69,7 +84,7 @@ class PlayListItem extends StatelessWidget {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue, // Text color
+                    backgroundColor: Colors.blue,
                   ),
                   onPressed: () {
                     progressBarState.updateProgress(2);

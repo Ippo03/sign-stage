@@ -36,8 +36,8 @@ class PlayDetailsScreen extends StatelessWidget {
                 CustomPlayCard(play: play),
                 Center(
                   child: Text(
-                    'Duration: ${play.duration} / Audience: ${play.minAge} years +',
-                    style: const TextStyle(fontSize: 19, color: Colors.yellow),
+                    'Duration: ${play.runtime} / Audience: ${play.ageLimit} years',
+                    style: const TextStyle(fontSize: 18, color: Colors.yellow),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -80,14 +80,14 @@ class PlayDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 Center(
                   child: Text(
-                    play.cast,
+                    play.cast.join(', '),
                     style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
                 const SizedBox(height: 20),
                 Center(
                   child: Text(
-                    'Regular entry: ${play.regularPrice} €, Disabled people: ${play.discountedPrice} €',
+                    'Regular entry: ${play.regularTickets.price} €, Disabled people: ${play.specialNeedsTickets.price} €',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),

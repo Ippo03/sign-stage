@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/storage/message_store.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
@@ -25,6 +26,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, dynamic>> _messages = MessageStore().messages;
   final TextEditingController _controller = TextEditingController();
   bool _responseCompleted = false;
+  final User user = User.instance!;
 
   @override
   void initState() {
@@ -240,10 +242,11 @@ class _ChatScreenState extends State<ChatScreen> {
             if (!isReceived)
               Container(
                 margin: const EdgeInsets.only(right: 8.0),
-                child: const Icon(
-                  Icons.account_circle,
-                  size: 40,
-                  color: Colors.blue,
+                child: Image.asset(
+                  user.imageUrl,
+                  width: 40,
+                  height: 40,
+              
                 ),
               ),
             Container(

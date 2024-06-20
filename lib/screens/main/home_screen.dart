@@ -14,23 +14,23 @@ class HomeScreen extends StatelessWidget {
 
   final User user = User.instance!;
 
-  List<String> _calculateCurrentWeek() {
+  List<String> _calculateCurrentMonth() {
     DateTime now = DateTime.now();
-    DateTime sevenDaysLater = now.add(const Duration(days: 7));
+    DateTime oneMonthLater = now.add(const Duration(days: 30));
 
     String fromDate = DateFormat.yMd().format(now); 
-    String toDate = DateFormat.yMd().format(sevenDaysLater); 
+    String toDate = DateFormat.yMd().format(oneMonthLater); 
 
     return [fromDate, toDate];
   }
 
-  List<String> _calculateNextWeek() {
+  List<String> _calculateNextMonth() {
     DateTime now = DateTime.now();
-    DateTime sevenDaysLater = now.add(const Duration(days: 7));
-    DateTime fourteenDaysLater = now.add(const Duration(days: 14));
+    DateTime oneMothLater = now.add(const Duration(days: 30));
+    DateTime twoMonthsLater = now.add(const Duration(days: 61));
 
-    String fromDate = DateFormat.yMd().format(sevenDaysLater); 
-    String toDate = DateFormat.yMd().format(fourteenDaysLater); 
+    String fromDate = DateFormat.yMd().format(oneMothLater); 
+    String toDate = DateFormat.yMd().format(twoMonthsLater); 
 
     return [fromDate, toDate];
   }
@@ -90,7 +90,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'From ${_calculateCurrentWeek()[0]} to ${_calculateCurrentWeek()[1]}',
+                      'From ${_calculateCurrentMonth()[0]} to ${_calculateCurrentMonth()[1]}',
                       style: const TextStyle(fontSize: 16, color: Colors.white, fontStyle: FontStyle.italic),
                     ),
                   ],
@@ -113,7 +113,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      'From ${_calculateNextWeek()[0]} to ${_calculateNextWeek()[1]}',
+                      'From ${_calculateNextMonth()[0]} to ${_calculateNextMonth()[1]}',
                       style: const TextStyle(fontSize: 16, color: Colors.white, fontStyle: FontStyle.italic),
                     ),
                   ],
@@ -124,9 +124,6 @@ class HomeScreen extends StatelessWidget {
               ),
               PlayListItem(
                 play: plays[3],
-              ),
-              PlayListItem(
-                play: plays[4],
               ),
             ],
           ),
