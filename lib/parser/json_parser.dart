@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:sign_stage/models/main/play.dart';
 import 'package:sign_stage/models/main/ticket.dart';
+import 'package:sign_stage/models/util/booking_info.dart';
 import 'package:sign_stage/models/util/ticket_type.dart';
 
 // Parser function that takes a JSON string as input
@@ -60,10 +61,8 @@ HashMap<DateTime, List<Ticket?>> parseAvailableDates(
         tickets.add(Ticket(
           id: ticketJson['id'] ?? '',
           play: Play.fromJson(ticketJson['play']),
-          dateTime: DateTime.parse(ticketJson['dateTime']),
-          location: ticketJson['location'] ?? '',
+          bookingInfo: BookingInfo.fromJson(ticketJson['bookingInfo']),
           status: ticketJson['status'] ?? '',
-          price: ticketJson['price'] ?? 0.0,
           barcode: ticketJson['barcode'] ?? '',
         ));
       });

@@ -1,3 +1,4 @@
+import 'package:sign_stage/models/main/ticket.dart';
 import 'package:sign_stage/models/util/credit_card.dart';
 
 class User {
@@ -9,6 +10,7 @@ class User {
     required this.imageUrl,
     required this.activities,
     required this.creditCards,
+    required this.tickets,
   });
 
   // The single instance of the class
@@ -22,6 +24,7 @@ class User {
     required String imageUrl,
     required List<String> activities,
     required List<CreditCard> creditCards,
+    required List<Ticket> tickets,
   }) {
     _instance ??= User._privateConstructor(
       username: username,
@@ -30,6 +33,7 @@ class User {
       imageUrl: imageUrl,
       activities: activities,
       creditCards: creditCards,
+      tickets: tickets,
     );
     return _instance!;
   }
@@ -40,6 +44,7 @@ class User {
   final String imageUrl;
   final List<String> activities;
   final List<CreditCard> creditCards;
+  final List<Ticket> tickets;
 
   // Get the instance
   static User? get instance => _instance;

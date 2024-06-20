@@ -31,5 +31,6 @@ List<User> users = [
         cardType: CreditCard.getRandomCardType(),
       ),
     ],
+    tickets: [],
   ),
 ];
