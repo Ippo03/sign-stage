@@ -13,19 +13,26 @@ class CustomMap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: markerLocation,
-          zoom: 13.5,
-        ),
-        markers: {
-          Marker(
-            markerId: MarkerId(markerTitle),
-            position: markerLocation,
-            infoWindow: InfoWindow(title: markerTitle),
+    return Container(
+      height: 175,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: markerLocation,
+            zoom: 13.5,
           ),
-        },
+          markers: {
+            Marker(
+              markerId: MarkerId(markerTitle),
+              position: markerLocation,
+              infoWindow: InfoWindow(title: markerTitle),
+            ),
+          },
+        ),
       ),
     );
   }

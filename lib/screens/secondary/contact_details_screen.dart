@@ -55,12 +55,9 @@ class ContactDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8.0),
-            const SizedBox(
-              height: 150,
-              child: CustomMap(
-                markerLocation: LatLng(signStageLat, signStageLng),
-                markerTitle: signStageName,
-              ),
+            const CustomMap(
+              markerLocation: LatLng(signStageLat, signStageLng),
+              markerTitle: signStageName,
             ),
             const SizedBox(height: 16.0),
             const Text(
