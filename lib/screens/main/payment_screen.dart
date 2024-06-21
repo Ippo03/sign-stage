@@ -1,5 +1,8 @@
+import 'dart:collection';
+
 import 'package:barcode/barcode.dart';
 import 'package:flutter/material.dart';
+import 'package:sign_stage/data/plays.dart';
 import 'package:sign_stage/models/main/play.dart';
 import 'package:sign_stage/models/main/ticket.dart';
 import 'package:sign_stage/models/main/user.dart';
@@ -219,6 +222,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             );
 
                             user!.tickets.add(ticket);
+
+                            // update plays tickets
+                            final playIndex = plays.indexWhere(
+                              (play) => play.title == widget.play.title,
+                            );
+
+                            final String timeOfDay = widget.play.afternoon == widget.bookingInfo.selectedTime
+                                ? 'afternoon'
+                                : 'night';
+
+                            plays[playIndex]
+                                .availableDates
+                                .putIfAbsent(widget.bookingInfo.selectedDate,
+                                    () => HashMap<String, List<Ticket?>>())
+                                .putIfAbsent(timeOfDay, () => [])
+                                .add(ticket);
 
                             // Show success dialog
                             showDialog(

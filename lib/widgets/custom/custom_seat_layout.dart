@@ -8,6 +8,8 @@ class CustomSeatLayout extends StatelessWidget {
   final List<String> selectedSeats;
   final Function(String) onSeatSelected;
   final Play play;
+  final DateTime selectedDate;
+  final String selectedTime;
 
   const CustomSeatLayout({
     super.key,
@@ -16,6 +18,8 @@ class CustomSeatLayout extends StatelessWidget {
     required this.selectedSeats,
     required this.onSeatSelected,
     required this.play,
+    required this.selectedDate,
+    required this.selectedTime,
   });
 
   @override
@@ -26,6 +30,8 @@ class CustomSeatLayout extends StatelessWidget {
       selectedSeats: selectedSeats,
       onSeatSelected: onSeatSelected,
       play: play,
+      selectedDate: selectedDate,
+      selectedTime: selectedTime,
     );
   }
 }

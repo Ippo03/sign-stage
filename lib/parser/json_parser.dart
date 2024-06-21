@@ -43,33 +43,43 @@ List<Play> parsePlaysFromJson(String jsonString) {
       .toList();
 }
 
-HashMap<DateTime, List<Ticket?>> parseAvailableDates(
+HashMap<DateTime, HashMap<String, List<Ticket?>>> parseAvailableDates(
     Map<String, dynamic> json) {
-  HashMap<DateTime, List<Ticket?>> availableDates =
-      HashMap<DateTime, List<Ticket?>>();
+  HashMap<DateTime, HashMap<String, List<Ticket?>>> availableDates =
+      HashMap<DateTime, HashMap<String, List<Ticket?>>>();
 
   json.forEach((key, value) {
     // Convert the date string into DateTime object
     DateTime date = DateTime.parse(key);
 
-    // Initialize an empty list for tickets
-    List<Ticket?> tickets = [];
+    // Initialize an empty HashMap for play types and their tickets
+    HashMap<String, List<Ticket?>> playTypeTicketsMap = HashMap<String, List<Ticket?>>();
 
-    // If the value is not null and is a list, parse each ticket
-    if (value != null && value.toString() != '[]' && value is List) {
-      value.forEach((ticketJson) {
-        tickets.add(Ticket(
-          id: ticketJson['id'] ?? '',
-          play: Play.fromJson(ticketJson['play']),
-          bookingInfo: BookingInfo.fromJson(ticketJson['bookingInfo']),
-          status: ticketJson['status'] ?? '',
-          barcode: ticketJson['barcode'] ?? '',
-        ));
+    if (value != null && value is Map<String, dynamic>) {
+      value.forEach((playType, ticketsJson) {
+        // Initialize an empty list for tickets
+        List<Ticket?> tickets = [];
+
+        // If ticketsJson is not null and is a list, parse each ticket
+        if (ticketsJson != null && ticketsJson is List) {
+          ticketsJson.forEach((ticketJson) {
+            tickets.add(Ticket(
+              id: ticketJson['id'] ?? '',
+              play: Play.fromJson(ticketJson['play']),
+              bookingInfo: BookingInfo.fromJson(ticketJson['bookingInfo']),
+              status: ticketJson['status'] ?? '',
+              barcode: ticketJson['barcode'] ?? '',
+            ));
+          });
+        }
+
+        // Add the play type and corresponding list of tickets to the map
+        playTypeTicketsMap[playType] = tickets;
       });
     }
 
-    // Add the date and corresponding list of tickets to the map
-    availableDates[date] = tickets;
+    // Add the date and corresponding play type tickets map to the outer map
+    availableDates[date] = playTypeTicketsMap;
   });
 
   return availableDates;

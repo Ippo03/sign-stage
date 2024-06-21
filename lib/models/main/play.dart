@@ -32,7 +32,8 @@ class Play {
   List<String> cast;
   String genre;
   String runtime;
-  HashMap<DateTime, List<Ticket?>> availableDates = HashMap<DateTime, List<Ticket>>();
+  HashMap<DateTime, HashMap<String, List<Ticket?>>> availableDates =
+      HashMap<DateTime, HashMap<String, List<Ticket?>>>();
   String afternoon;
   String night;
   TicketType regularTickets;
@@ -67,35 +68,55 @@ class Play {
 
   // getters
   // Day of week, day of month month and year
-  String get fullDateTime => '${availableDates.keys.first.weekday}, ${availableDates.keys.first.day} ${availableDates.keys.first.month} ${availableDates.keys.first.year}';
-  int get totalAvailableTickets => regularTickets.availableTickets + specialNeedsTickets.availableTickets;
-  int get totalSoldTickets => regularTickets.soldTickets + specialNeedsTickets.soldTickets;
+  String get fullDateTime =>
+      '${availableDates.keys.first.weekday}, ${availableDates.keys.first.day} ${availableDates.keys.first.month} ${availableDates.keys.first.year}';
+  int get totalAvailableTickets =>
+      regularTickets.availableTickets + specialNeedsTickets.availableTickets;
+  int get totalSoldTickets =>
+      regularTickets.soldTickets + specialNeedsTickets.soldTickets;
 
   // methods
   // function that check if a specific date is sold out
-  bool isSoldOutForDate(DateTime date) {
-    if (availableDates.containsKey(date)) {
-      return availableDates[date]!.length >= totalAvailableTickets;
+  bool isSoldOutForDateAndTime(DateTime date, String playType) {
+    if (availableDates.containsKey(date) &&
+        availableDates[date]!.containsKey(playType)) {
+      return availableDates[date]![playType]!.length >= totalAvailableTickets;
     }
     return false;
   }
 
-  // function that returns the number of available tickets for a specific date
-  int availableTicketsForDate(DateTime date) {
-    if (availableDates.containsKey(date)) {
-      return totalAvailableTickets - availableDates[date]!.length;
+// Function that returns the number of available tickets for a specific date and play type
+  int availableTicketsForDateAndTime(DateTime date, String playType) {
+    if (availableDates.containsKey(date) &&
+        availableDates[date]!.containsKey(playType)) {
+      return totalAvailableTickets - availableDates[date]![playType]!.length;
     }
     return totalAvailableTickets;
   }
 
-  // function that finds the status of the tickets for a specific date (sold out, few available == less that 1/5, available)
-  String ticketStatusForDate(DateTime date) {
-    if (isSoldOutForDate(date)) {
+// Function that finds the status of the tickets for a specific date and play type (sold out, few available, available)
+  String ticketStatusForDateAndTime(DateTime date, String playType) {
+    if (isSoldOutForDateAndTime(date, playType)) {
       return 'sold out';
-    } else if (availableTicketsForDate(date) <= totalAvailableTickets / 5) {
+    } else if (availableTicketsForDateAndTime(date, playType) <=
+        totalAvailableTickets / 5) {
       return 'few available';
     } else {
       return 'available';
     }
+  }
+
+// Function to get the reserved seats for a specific date and play type
+  List<String> getReservedSeatsForDateAndTime(DateTime date, String playType) {
+    List<String> reservedSeats = [];
+    if (availableDates.containsKey(date) &&
+        availableDates[date]!.containsKey(playType)) {
+      availableDates[date]![playType]!.forEach((ticket) {
+        if (ticket != null) {
+          reservedSeats.addAll(ticket.bookingInfo.selectedSeats);
+        }
+      });
+    }
+    return reservedSeats;
   }
 }

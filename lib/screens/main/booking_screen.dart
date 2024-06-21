@@ -23,11 +23,6 @@ class BookingScreen extends StatefulWidget {
 
 class _BookingScreenState extends State<BookingScreen> {
   DateTime selectedDate = DateTime(2024, 6, 8);
-  final List<DateTime> availableDates = [
-    DateTime(2024, 6, 1),
-    DateTime(2024, 6, 8),
-    DateTime(2024, 6, 15),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +140,8 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Widget _buildTimeSlot(String time, ProgressBarState progressBarState) {
-    final seatColor = widget.play.ticketStatusForDate(selectedDate) == 'available'
+    String timeOfDay = widget.play.afternoon == time ? 'afternoon' : 'night';
+    final seatColor = widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay) == 'available'
         ? Colors.green
         : Colors.red;
       
@@ -187,7 +183,7 @@ class _BookingScreenState extends State<BookingScreen> {
               style: TextStyle(fontSize: 20, color: Colors.grey[800]),
             ),
             Text(
-              'Seat status: ${widget.play.ticketStatusForDate(selectedDate)}',
+              'Seat status: ${widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay)}',
               style: TextStyle(color: seatColor),
             ),
             Text(

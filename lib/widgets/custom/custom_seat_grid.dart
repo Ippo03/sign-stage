@@ -7,6 +7,8 @@ class CustomSeatGrid extends StatelessWidget {
   final List<String> selectedSeats;
   final Function(String) onSeatSelected;
   final Play play;
+  final DateTime selectedDate;
+  final String selectedTime;
 
   const CustomSeatGrid({
     super.key,
@@ -15,6 +17,8 @@ class CustomSeatGrid extends StatelessWidget {
     required this.selectedSeats,
     required this.onSeatSelected,
     required this.play,
+    required this.selectedDate,
+    required this.selectedTime,
   });
 
   @override
@@ -27,7 +31,7 @@ class CustomSeatGrid extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             color: Colors.black,
           ),
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Center(
             child: Text(
               'Stage - ${play.hall}',
@@ -47,11 +51,13 @@ class CustomSeatGrid extends StatelessWidget {
             ),
             itemCount: rows * cols,
             itemBuilder: (context, index) {
+              final timeOfDay = selectedTime == play.afternoon ? 'afternoon' : 'night';
               final row = index ~/ cols;
               final col = index % cols;
               final seat = '${String.fromCharCode(65 + row)}${col + 1}';
               final isSelected = selectedSeats.contains(seat);
-              // final isReserved = (index % 2 == 0);
+              final isReserved =
+                  play.getReservedSeatsForDateAndTime(selectedDate, timeOfDay).contains(seat);
               // final isAvailable = !isReserved && !isSelected;
               final isForHearingImpaired = play.hearingImpaired
                   ? play.hall == 'Hall A'
@@ -60,20 +66,15 @@ class CustomSeatGrid extends StatelessWidget {
                   : false;
 
               return GestureDetector(
-                // onTap: isReserved
-                onTap: false ? null : () => onSeatSelected(seat),
+                onTap: isReserved ? null : () => onSeatSelected(seat),
                 child: Container(
                   margin: const EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? Colors.green
-                        // : isReserved
-                        : false
+                        : isReserved
                             ? Colors.red
-                            // : isAvailable
-                            : true
-                                ? Colors.grey
-                                : Colors.blue,
+                            : Colors.grey,
                     borderRadius: BorderRadius.circular(4.0),
                   ),
                   child: Center(
