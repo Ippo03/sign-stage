@@ -83,11 +83,17 @@ class _CreditCardsScreenState extends State<CreditCardsScreen> {
                 ),
               ),
               Positioned(
-                top: 16,
+                top: 6,
                 right: 16,
-                child: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _deleteCard(index),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => _deleteCard(index),
+                  ),
                 ),
               ),
             ],

@@ -36,7 +36,7 @@ class CustomPlayCard extends StatelessWidget {
                       textAlign: TextAlign.left,
                     ),
                     Text(
-                      'by ${play.author}',
+                      'by ${play.playwriter}',
                       style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
                       textAlign: TextAlign.left,
                     ),

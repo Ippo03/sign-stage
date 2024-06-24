@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sign_stage/models/main/user.dart';
+import 'package:sign_stage/models/util/message.dart';
+import 'package:sign_stage/screens/chat/navigation_message.dart';
 import 'package:sign_stage/storage/message_store.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
@@ -27,7 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String _message = '';
   Offset offset = const Offset(20.0, 20.0);
   Offset initialPosition = Offset.zero;
-  final List<Map<String, dynamic>> _messages = MessageStore().messages;
+  final List<Message> _messages = MessageStore().messages;
   final TextEditingController _controller = TextEditingController();
   bool _responseCompleted = false;
   late bool _showInitialMessage;
@@ -38,26 +40,34 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
-    _showInitialMessage = _messages.isEmpty; 
+    _showInitialMessage = _messages.isEmpty;
     if (_showInitialMessage) {
       _initializeChat();
     }
   }
 
   void _initializeChat() {
-    setState(() {
-      _messages.add({'message': '', 'isReceived': true});
-    });
+  setState(() {
+    _messages.add(Message(text: '', isReceived: true));
+  });
 
-    String initialMessage = "Hello, I'm your theater assistant! How can I help you?";
-    _displayMessageCharacterByCharacter(initialMessage);
-  }
+  String initialMessage = 
+  """Hello! Welcome to Sign Stage Theater's AI assistant. I'm here to assist you with the following: 
+  - Information about current and upcoming plays
+  - Booking or canceling tickets
+  - Viewing your purchased tickets
+  - Directions and access to the theater
+  - Learning more about Sign Stage Theater
+  - Contacting a theater employee
+  How can I help you today?""";
+  _displayMessageCharacterByCharacter(initialMessage);
+}
 
   Future<void> _displayMessageCharacterByCharacter(String message) async {
     for (int i = 0; i < message.length; i++) {
       await Future.delayed(const Duration(milliseconds: 50));
       setState(() {
-        _messages.last['message'] = message.substring(0, i + 1);
+        _messages.last.text = message.substring(0, i + 1);
       });
     }
     _speak(message);
@@ -67,16 +77,9 @@ class _ChatScreenState extends State<ChatScreen> {
     print('Speaking: $message');
   }
 
-  // void _speak(String text) async {
-  //   await ttsInstance.setLanguage('en-US'); 
-
-  //   await ttsInstance.setPitch(1.0); // Set pitch (1.0 is the default)
-  //   await ttsInstance.speak(text); // Speak the provided text
-  // }
-
   @override
   void dispose() {
-    _timer?.cancel(); 
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -133,7 +136,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage() async {
     setState(() {
-      _messages.add({'message': _controller.text, 'isReceived': false});
+      _messages.add(Message(text: _controller.text, isReceived: false));
       _message = _controller.text;
       _controller.clear();
       _responseCompleted = false;
@@ -145,7 +148,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Display typing indicator
     setState(() {
-      _messages.add({'message': '', 'isReceived': true, 'isTyping': true});
+      _messages.add(Message(text: '', isReceived: true, isTyping: true));
     });
 
     // Send message to server and fetch response
@@ -159,9 +162,11 @@ class _ChatScreenState extends State<ChatScreen> {
       final responseData = jsonDecode(response.body);
       // Display the response character by character
       String responseText = responseData['response'];
+      String responseCode = responseData['code'];
+      print(('Code: $responseCode'));
       setState(() {
-        _messages.removeLast(); 
-        _messages.add({'message': '', 'isReceived': true});
+        _messages.removeLast();
+        _messages.add(Message(text: '', isReceived: true));
       });
       for (int i = 0; i < responseText.length; i++) {
         if (!_isGeneratingResponse) {
@@ -169,7 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
         }
         await Future.delayed(const Duration(milliseconds: 50));
         setState(() {
-          _messages.last['message'] = responseText.substring(0, i + 1);
+          _messages.last.text = responseText.substring(0, i + 1);
           if (i == responseText.length - 1) {
             _responseCompleted = true;
             _isGeneratingResponse = false;
@@ -177,11 +182,54 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       }
       _speak(responseText);
+      if (canNavigateToScreen(responseCode)) {
+        print('Navigating to screen...');
+        print('Response code: $responseCode');
+        setState(
+          () {
+            _messages.add(
+              Message(
+                widget: NavigationMessage(
+                  responseCode: responseCode,
+                ),
+                isReceived: true,
+              ),
+            );
+          },
+        );
+      }
     } else {
       print('Failed to send message: ${response.body}');
       setState(() {
-        _messages.removeLast(); // Remove typing indicator
+        _messages.removeLast();
       });
+    }
+  }
+
+  static bool canNavigateToScreen(String code) {
+    switch (code) {
+      case 'USER_WANTS_TO_GET_THEATER_INFO':
+        return true;
+      case 'USER_WANTS_TO_GET_DIRECTIONS':
+        return true;
+      case 'USER_WANTS_TO_CONTACT_A_HUMAN':
+        return true;
+      case 'USER_WANTS_TO_SUBMIT_A_COMPLAINT':
+        return true;
+      case 'USER_CANCELS_TICKET':
+        return true;
+      case 'USER_SEES_PURCHASED_TICKETS':
+        return true;
+      case 'USER_INPUT_NOT_UNDERSTANDABLE':
+        return false;
+      case 'USER_INPUT_UNRELATED_TO_THEATER':
+        return false;
+      case 'USER_GREETS':
+        return false;
+      case 'OTHER':
+        return false;
+      default:
+        return false;
     }
   }
 
@@ -255,13 +303,15 @@ class _ChatScreenState extends State<ChatScreen> {
               child: ListView.builder(
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
+                  final message = _messages[index];
                   return messageBubble(
-                    isReceived: _messages[index]['isReceived'],
-                    message: _messages[index]['message'],
+                    isReceived: message.isReceived,
+                    message: message.text,
+                    widget: message.widget,
                     showIcon: index == _messages.length - 1
                         ? _responseCompleted
                         : false,
-                    isTyping: _messages[index]['isTyping'] ?? false, // Check if the message is a typing indicator
+                    isTyping: message.isTyping ?? false,
                   );
                 },
               ),
@@ -310,11 +360,13 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget messageBubble(
-      {required bool isReceived,
-      required String message,
-      required bool showIcon,
-      bool isTyping = false}) {
+  Widget messageBubble({
+    required bool isReceived,
+    String? message,
+    Widget? widget,
+    required bool showIcon,
+    bool isTyping = false,
+  }) {
     return Row(
       mainAxisAlignment:
           isReceived ? MainAxisAlignment.start : MainAxisAlignment.end,
@@ -360,8 +412,10 @@ class _ChatScreenState extends State<ChatScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (isTyping)
-                    TypingIndicator() 
-                  else
+                    TypingIndicator()
+                  else if (widget != null)
+                    widget
+                  else if (message != null)
                     Text(
                       message,
                       style: const TextStyle(
@@ -369,7 +423,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         color: Colors.black,
                       ),
                     ),
-                  if (isReceived && showIcon)
+                  if (isReceived && showIcon && message != null)
                     IconButton(
                       icon: const Icon(Icons.volume_up),
                       onPressed: () {

@@ -1,3 +1,5 @@
+import 'package:sign_stage/models/util/message.dart';
+
 class MessageStore {
   // Singleton
   static final MessageStore _instance = MessageStore._internal();
@@ -8,5 +10,5 @@ class MessageStore {
 
   MessageStore._internal();
 
-  final List<Map<String, dynamic>> messages = [];
+  final List<Message> messages = [];
 }

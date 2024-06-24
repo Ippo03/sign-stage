@@ -41,6 +41,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   final TextEditingController expirationDateController =
       TextEditingController();
   final TextEditingController cvvController = TextEditingController();
+  int _currentCardIndex = 0;
+  final PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -55,6 +57,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     cardNumberController.dispose();
     expirationDateController.dispose();
     cvvController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -160,6 +163,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentCardIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ProgressBarProvider(
@@ -214,10 +223,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 const SizedBox(height: 5),
                 SizedBox(
                   height: 260,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(width: 10),
+                  child: PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: _onPageChanged,
                     itemCount: user!.creditCards.length,
                     itemBuilder: (context, index) {
                       return CustomCreditCard(
@@ -225,6 +233,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         onCardSelected: _onCardSelected,
                       );
                     },
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    user!.creditCards.length,
+                    (index) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                      width: 8.0,
+                      height: 8.0,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _currentCardIndex == index
+                            ? Colors.blue
+                            : Colors.grey,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
