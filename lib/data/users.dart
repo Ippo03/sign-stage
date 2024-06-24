@@ -8,6 +8,7 @@ List<User> users = [
     username: 'ippo',
     email: 'ippo@example.com',
     password: 'ippo123',
+    phoneNumber: '69891289347',
     imageUrl: 'assets/icons/profile_pic.png',
     activities: [
       'Play Hunter',

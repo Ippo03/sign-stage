@@ -104,7 +104,6 @@ class Play {
 
 // Function that finds the status of the tickets for a specific date and play type (sold out, few available, available)
   String ticketStatusForDateAndTime(DateTime date, String playType) {
-    print("im here");
     if (isSoldOutForDateAndTime(date, playType)) {
       return 'Sold Out';
     } else if (availableTicketsForDateAndTime(date, playType) <=
@@ -116,7 +115,7 @@ class Play {
   }
 
   bool hearingImpairedStatusForDateAndTime(DateTime date, String playType) {
-    if (isSoldOutForDateAndTime(date, playType)) return false;
+    if (isSoldOutForDateAndTime(date, playType)) return true;
 
     const hallAHearingImpairedSeats = ['A1', 'B1', 'A7', 'B7'];
     const hallBHearingImpairedSeats = ['A1', 'B1', 'C1', 'A8', 'B8', 'C8'];

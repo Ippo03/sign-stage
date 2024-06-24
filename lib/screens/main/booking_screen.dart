@@ -111,7 +111,8 @@ class _BookingScreenState extends State<BookingScreen> {
         },
         onDaySelected: (selectedDay, focusedDay) {
           setState(() {
-            selectedDate = DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
+            selectedDate =
+                DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
           });
         },
         selectedDayPredicate: (day) {
@@ -159,7 +160,11 @@ class _BookingScreenState extends State<BookingScreen> {
                 ? Colors.orange
                 : Colors.red;
 
-    final hearingImpairedColor = widget.play.hearingImpairedStatusForDateAndTime(selectedDate, timeOfDay) == false ? Colors.green : Colors.red;
+    final hearingImpairedColor = widget.play
+                .hearingImpairedStatusForDateAndTime(selectedDate, timeOfDay) ==
+            false
+        ? Colors.green
+        : Colors.red;
 
     return InkWell(
       onTap: () {
@@ -212,22 +217,29 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
             Row(
               children: [
-                Text(
-                  'Hearing impaired: ${widget.play.hearingImpairedStatusForDateAndTime(selectedDate, timeOfDay) == true ? 'Not Available' : 'Available'}',
-                  style: TextStyle(color: Colors.grey[800]),
-                ),
+                widget.play.hearingImpaired
+                    ? Text(
+                        'Hearing impaired: ${widget.play.hearingImpairedStatusForDateAndTime(selectedDate, timeOfDay) == true ? 'Not Available' : 'Available'}',
+                        style: TextStyle(color: Colors.grey[800]),
+                      )
+                    : const Text('No seats for hearing impaired people'),
                 const SizedBox(width: 10.0),
                 Container(
-                  decoration: BoxDecoration(
-                    color: hearingImpairedColor,
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: const Icon(
-                    Icons.hearing,
-                    color: Colors.white,
-                    size: 16.0,
-                  ),
-                ),
+                    decoration: BoxDecoration(
+                      color: hearingImpairedColor,
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: widget.play.hearingImpaired
+                        ? const Icon(
+                            Icons.hearing,
+                            color: Colors.white,
+                            size: 16.0,
+                          )
+                        : const Icon(
+                            Icons.hearing_disabled,
+                            color: Colors.white,
+                            size: 16.0,
+                          )),
               ],
             ),
           ],

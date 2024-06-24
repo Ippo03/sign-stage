@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sign_stage/data/complaints.dart';
 import 'package:sign_stage/models/main/complaint.dart';
+import 'package:sign_stage/models/main/user.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class MakeComplaintsScreen extends StatefulWidget {
   const MakeComplaintsScreen({super.key});
@@ -11,26 +13,30 @@ class MakeComplaintsScreen extends StatefulWidget {
 
 class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _phoneNumberController = TextEditingController();
-  final _complaintHeadlineController = TextEditingController();
   final _complaintDescriptionController = TextEditingController();
+  final _otherHeadlineController = TextEditingController();
+  String? _selectedComplaint;
+
+  final stt.SpeechToText _speech = stt.SpeechToText();
+  bool _isListening = false;
+
+  final user = User.instance;
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _phoneNumberController.dispose();
-    _complaintHeadlineController.dispose();
     _complaintDescriptionController.dispose();
+    _otherHeadlineController.dispose();
     super.dispose();
   }
 
   void _onAddComplaint() {
     if (_formKey.currentState!.validate()) {
       final complaint = Complaint(
-        email: _emailController.text,
-        phoneNumber: _phoneNumberController.text,
-        headline: _complaintHeadlineController.text,
+        email: user!.email,
+        phoneNumber: user!.phoneNumber,
+        headline: _selectedComplaint == 'Other'
+            ? _otherHeadlineController.text
+            : _selectedComplaint ?? 'Other',
         description: _complaintDescriptionController.text,
       );
       complaints.add(complaint);
@@ -45,30 +51,33 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
     }
   }
 
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your email';
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => setState(() => _isListening = _speech.isListening),
+        onError: (val) => setState(() => _isListening = false),
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          onResult: (val) => setState(() {
+            _complaintDescriptionController.text = val.recognizedWords;
+          }),
+        );
+      }
+    } else {
+      setState(() => _isListening = false);
+      _speech.stop();
     }
-    return null;
   }
 
-  String? _validatePhoneNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your phone number';
-    }
-    return null;
-  }
-
-  String? _validateComplaintHeadline(String? value) {
-    if (value == null || value.isEmpty) {
+  String? _validateOtherHeadline(String? value) {
+    if (_selectedComplaint == 'Other' && (value == null || value.isEmpty)) {
       return 'Please enter a headline for your complaint';
     }
-    return null;
-  }
-
-  String? _validateComplaintDescription(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a description for your complaint';
+    if (_selectedComplaint != 'Other' &&
+        (_selectedComplaint == null || _selectedComplaint!.isEmpty)) {
+      return 'Please select a complaint headline';
     }
     return null;
   }
@@ -110,7 +119,7 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
-                  controller: _emailController,
+                  initialValue: user!.email,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: 'johndoe@example.com',
@@ -124,11 +133,11 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
                       borderSide: BorderSide(color: Colors.grey[400]!),
                     ),
                   ),
-                  validator: _validateEmail,
+                  readOnly: true,
                 ),
                 const SizedBox(height: 16.0),
                 TextFormField(
-                  controller: _phoneNumberController,
+                  initialValue: user!.phoneNumber,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: '6945678487',
@@ -142,7 +151,7 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
                       borderSide: BorderSide(color: Colors.grey[400]!),
                     ),
                   ),
-                  validator: _validatePhoneNumber,
+                  readOnly: true,
                 ),
                 const SizedBox(height: 24.0),
                 const Text(
@@ -154,13 +163,33 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-                TextFormField(
-                  controller: _complaintHeadlineController,
-                  style: const TextStyle(color: Colors.white),
+                DropdownButtonFormField<String>(
+                  value: _selectedComplaint,
+                  hint: const Text(
+                    'Select a predefined complaint',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  items: <String>[
+                    'Poor audio quality',
+                    'Uncomfortable seating',
+                    'Late show start',
+                    'Other'
+                  ].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedComplaint = newValue;
+                    });
+                  },
                   decoration: InputDecoration(
-                    hintText: 'Give a headline to your complaint...',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    labelText: 'Complaint Headline',
+                    labelText: 'Complaint Choices',
                     labelStyle: const TextStyle(color: Colors.white),
                     focusedBorder: const OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white),
@@ -169,8 +198,31 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
                       borderSide: BorderSide(color: Colors.grey[400]!),
                     ),
                   ),
-                  validator: _validateComplaintHeadline,
+                  dropdownColor: Colors.grey[850],
                 ),
+                if (_selectedComplaint == 'Other') ...[
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _otherHeadlineController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'Enter your custom complaint headline...',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      labelText: 'Custom Complaint Headline',
+                      labelStyle: const TextStyle(color: Colors.white),
+                      border: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    validator: _validateOtherHeadline,
+                  ),
+                ],
                 const SizedBox(height: 16.0),
                 TextFormField(
                   controller: _complaintDescriptionController,
@@ -187,8 +239,14 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey[400]!),
                     ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isListening ? Icons.mic : Icons.mic_none,
+                        color: _isListening ? Colors.red : Colors.white,
+                      ),
+                      onPressed: _listen,
+                    ),
                   ),
-                  validator: _validateComplaintDescription,
                 ),
                 const SizedBox(height: 24.0),
                 Center(
@@ -197,7 +255,8 @@ class _MakeComplaintsScreenState extends State<MakeComplaintsScreen> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.grey[700],
-                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

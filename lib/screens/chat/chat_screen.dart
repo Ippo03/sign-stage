@@ -28,6 +28,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<Map<String, dynamic>> _messages = MessageStore().messages;
   final TextEditingController _controller = TextEditingController();
   bool _responseCompleted = false;
+  late bool _showInitialMessage;
   final User user = User.instance!;
   Timer? _timer;
 
@@ -35,6 +36,29 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
+    _showInitialMessage = _messages.isEmpty; 
+    if (_showInitialMessage) {
+      _initializeChat();
+    }
+  }
+
+  void _initializeChat() {
+    setState(() {
+      _messages.add({'message': '', 'isReceived': true});
+    });
+
+    String initialMessage = "Hello, I'm your theater assistant! How can I help you?";
+    _displayMessageCharacterByCharacter(initialMessage);
+  }
+
+  Future<void> _displayMessageCharacterByCharacter(String message) async {
+    for (int i = 0; i < message.length; i++) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      setState(() {
+        _messages.last['message'] = message.substring(0, i + 1);
+      });
+    }
+    _speak(message);
   }
 
   void _speak(String message) {
@@ -50,14 +74,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // Cancel timer when disposing of the screen
+    _timer?.cancel(); 
     super.dispose();
   }
 
   void _startTimeout() {
     // Cancel any previous timers before starting a new one
     _timer?.cancel();
-    _timer = Timer(const Duration(seconds: 3), () {
+    _timer = Timer(const Duration(seconds: 2), () {
       // Timeout reached, stop speech recognition
       if (_isListening) {
         _speech.stop();

@@ -7,6 +7,7 @@ class User {
     required this.username,
     required this.email,
     required this.password,
+    required this.phoneNumber,
     required this.imageUrl,
     required this.activities,
     required this.creditCards,
@@ -21,6 +22,7 @@ class User {
     required String username,
     required String email,
     required String password,
+    required String phoneNumber,
     required String imageUrl,
     required List<String> activities,
     required List<CreditCard> creditCards,
@@ -30,6 +32,7 @@ class User {
       username: username,
       email: email,
       password: password,
+      phoneNumber: phoneNumber,
       imageUrl: imageUrl,
       activities: activities,
       creditCards: creditCards,
@@ -41,6 +44,7 @@ class User {
   final String username;
   final String email;
   final String password;
+  final String phoneNumber;
   final String imageUrl;
   final List<String> activities;
   final List<CreditCard> creditCards;

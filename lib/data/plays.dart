@@ -71,7 +71,7 @@ const jsonString = '''
     "regularTickets": {
       "name": "regular",
       "price": 20,
-      "availableTickets": 50,
+      "availableTickets": 40,
       "soldTickets": 0
     },
     "specialNeedsTickets": {
@@ -153,7 +153,7 @@ const jsonString = '''
     "regularTickets": {
       "name": "regular",
       "price": 24,
-      "availableTickets": 50,
+      "availableTickets": 40,
       "soldTickets": 0
     },
     "specialNeedsTickets": {
