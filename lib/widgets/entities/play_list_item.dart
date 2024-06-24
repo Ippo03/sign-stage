@@ -56,7 +56,7 @@ class PlayListItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${play.hall}: ${play.title} by ${play.author}',
+                  '${play.hall}: ${play.title} by ${play.playwriter}',
                   style: const TextStyle(
                     fontSize: 18,
                     color: Colors.white,

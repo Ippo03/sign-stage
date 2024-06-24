@@ -129,32 +129,6 @@ class _ETicketsScreenState extends State<ETicketsScreen> {
               Center(
                 child: user!.tickets.isNotEmpty
                     ? ElevatedButton(
-                        onPressed: () async {
-                          // final eTicketItem = ETicketItem(
-                          //   key: ValueKey(user!.tickets[_currentIndex].id),
-                          //   ticket: user!.tickets[_currentIndex],
-                          // );
-                          // await eTicketItem.captureAndSaveImage();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 50, vertical: 15),
-                        ),
-                        child: const Text(
-                          'Download E-Ticket',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                      )
-                    : null,
-              ),
-              const SizedBox(height: 10),
-              Center(
-                child: user!.tickets.isNotEmpty
-                    ? ElevatedButton(
                         onPressed: () {
                           showDialog(
                             context: context,

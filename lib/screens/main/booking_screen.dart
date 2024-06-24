@@ -91,14 +91,11 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Widget _buildCalendar() {
-    print('Available Dates ${widget.play.availableDates}');
-    print('First Date ${widget.play.availableDates.entries.first.key}');
-    print('Last Date ${widget.play.availableDates.entries.last.key}');
     return Container(
       height: 400,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: Colors.white,
+        color: Colors.grey[600],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: TableCalendar(
@@ -121,6 +118,9 @@ class _BookingScreenState extends State<BookingScreen> {
         headerStyle: const HeaderStyle(
           titleCentered: true,
           formatButtonVisible: false,
+          titleTextStyle: TextStyle(color: Colors.white),
+          leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
+          rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
         ),
         calendarStyle: CalendarStyle(
           todayDecoration: const BoxDecoration(
@@ -132,6 +132,7 @@ class _BookingScreenState extends State<BookingScreen> {
             shape: BoxShape.circle,
           ),
           selectedTextStyle: const TextStyle(color: Colors.white),
+          defaultTextStyle: const TextStyle(color: Colors.white),
         ),
       ),
     );
@@ -151,47 +152,51 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _buildTimeSlot(String time, ProgressBarState progressBarState) {
     String timeOfDay = widget.play.afternoon == time ? 'afternoon' : 'night';
-    final seatColor =
-        widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay) ==
-                'Available'
-            ? Colors.green
-            : widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay) ==
-                    'Few Available'
-                ? Colors.orange
-                : Colors.red;
 
-    final hearingImpairedColor = widget.play
-                .hearingImpairedStatusForDateAndTime(selectedDate, timeOfDay) ==
-            false
+    final seatStatus =
+        widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay);
+    final hearingImpairedStatus = widget.play
+        .hearingImpairedStatusForDateAndTime(selectedDate, timeOfDay);
+
+    final seatColor = seatStatus == 'Available'
         ? Colors.green
-        : Colors.red;
+        : seatStatus == 'Few Available'
+            ? Colors.orange
+            : Colors.red;
+
+    final hearingImpairedColor =
+        hearingImpairedStatus == false ? Colors.green : Colors.red;
+
+    final soldOut = seatStatus == 'Sold Out';
 
     return InkWell(
-      onTap: () {
-        progressBarState.updateProgress(3);
+      onTap: soldOut
+          ? null // Disable onTap if sold out
+          : () {
+              progressBarState.updateProgress(3);
 
-        BookingInfo info = BookingInfo(
-          play: widget.play,
-          selectedDate: selectedDate,
-          selectedTime: time,
-        );
+              BookingInfo info = BookingInfo(
+                play: widget.play,
+                selectedDate: selectedDate,
+                selectedTime: time,
+              );
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SeatSelectionScreen(
-              play: widget.play,
-              bookingInfo: info,
-            ),
-          ),
-        );
-      },
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SeatSelectionScreen(
+                    play: widget.play,
+                    bookingInfo: info,
+                  ),
+                ),
+              );
+            },
       child: Container(
         width: 325,
         padding: const EdgeInsets.all(12.0),
         margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
         decoration: BoxDecoration(
-          color: Colors.blueAccent,
+          color: soldOut ? Colors.grey : Colors.blueAccent, // Grey if sold out
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Column(
@@ -204,7 +209,7 @@ class _BookingScreenState extends State<BookingScreen> {
             Row(
               children: [
                 Text(
-                  'Seat status: ${widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay)}',
+                  'Seat status: $seatStatus',
                   style: TextStyle(color: Colors.grey[800]),
                 ),
                 const SizedBox(width: 10.0),
@@ -219,27 +224,28 @@ class _BookingScreenState extends State<BookingScreen> {
               children: [
                 widget.play.hearingImpaired
                     ? Text(
-                        'Hearing impaired: ${widget.play.hearingImpairedStatusForDateAndTime(selectedDate, timeOfDay) == true ? 'Not Available' : 'Available'}',
+                        'Hearing impaired: ${hearingImpairedStatus ? 'Not Available' : 'Available'}',
                         style: TextStyle(color: Colors.grey[800]),
                       )
                     : const Text('No seats for hearing impaired people'),
                 const SizedBox(width: 10.0),
                 Container(
-                    decoration: BoxDecoration(
-                      color: hearingImpairedColor,
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: widget.play.hearingImpaired
-                        ? const Icon(
-                            Icons.hearing,
-                            color: Colors.white,
-                            size: 16.0,
-                          )
-                        : const Icon(
-                            Icons.hearing_disabled,
-                            color: Colors.white,
-                            size: 16.0,
-                          )),
+                  decoration: BoxDecoration(
+                    color: hearingImpairedColor,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: widget.play.hearingImpaired
+                      ? const Icon(
+                          Icons.hearing,
+                          color: Colors.white,
+                          size: 16.0,
+                        )
+                      : const Icon(
+                          Icons.hearing_disabled,
+                          color: Colors.white,
+                          size: 16.0,
+                        ),
+                ),
               ],
             ),
           ],

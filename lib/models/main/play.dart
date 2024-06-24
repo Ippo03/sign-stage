@@ -9,7 +9,7 @@ class Play {
     required this.title,
     required this.headline,
     required this.description,
-    required this.author,
+    required this.playwriter,
     required this.cast,
     required this.genre,
     required this.runtime,
@@ -28,7 +28,7 @@ class Play {
   String title;
   String headline;
   String description;
-  String author;
+  String playwriter;
   List<String> cast;
   String genre;
   String runtime;
@@ -49,7 +49,7 @@ class Play {
       title: json['title'],
       headline: json['headline'],
       description: json['description'],
-      author: json['author'],
+      playwriter: json['playwriter'],
       cast: List<String>.from(json['cast']),
       genre: json['genre'],
       runtime: json['runtime'],

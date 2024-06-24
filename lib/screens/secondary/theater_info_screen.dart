@@ -4,8 +4,8 @@ import 'package:sign_stage/data/constants.dart';
 import 'package:sign_stage/services/launcher_url_service.dart';
 import 'package:sign_stage/widgets/custom/custom_map.dart';
 
-class ContactDetailsScreen extends StatelessWidget {
-  const ContactDetailsScreen({super.key});
+class TheaterInfoScreen extends StatelessWidget {
+  const TheaterInfoScreen({super.key});
 
   void _getDirections() {
     openGoogleMaps(
@@ -116,12 +116,20 @@ class ContactDetailsScreen extends StatelessWidget {
                 const SizedBox(width: 8.0),
                 GestureDetector(
                   onTap: _makePhoneCall,
-                  child: const Text(
-                    signStagePhone,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: const Text(
+                      signStagePhone,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.white,
+                        decoration: TextDecoration.none,
+                      ),
                     ),
                   ),
                 ),
@@ -148,12 +156,20 @@ class ContactDetailsScreen extends StatelessWidget {
                 const SizedBox(width: 8.0),
                 GestureDetector(
                   onTap: _sendEmail,
-                  child: const Text(
-                    signStageEmail,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: const Text(
+                      signStageEmail,
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.white,
+                        decoration: TextDecoration.none,
+                      ),
                     ),
                   ),
                 ),

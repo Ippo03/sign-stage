@@ -59,37 +59,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   void _onCardSelected(CreditCard card) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Card Selected'),
-          content: const Text(
-              'Do you want to fill the payment details with this card?'),
-          actions: [
-            TextButton(
-              child: const Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Yes'),
-              onPressed: () {
-                setState(() {
-                  emailController.text = user!.email;
-                  cardholderNameController.text = card.cardHolderName;
-                  cardNumberController.text = card.cardNumber;
-                  expirationDateController.text = card.expiryDate;
-                  cvvController.text = card.cvvCode;
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+    setState(() {
+      emailController.text = user!.email;
+      cardholderNameController.text = card.cardHolderName;
+      cardNumberController.text = card.cardNumber;
+      expirationDateController.text = card.expiryDate;
+      cvvController.text = card.cvvCode;
+    });
   }
 
   bool _validateFields() {
@@ -98,6 +74,90 @@ class _PaymentScreenState extends State<PaymentScreen> {
         cardNumberController.text.isNotEmpty &&
         expirationDateController.text.isNotEmpty &&
         cvvController.text.isNotEmpty;
+  }
+
+  Future<void> _showConfirmationDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Payment'),
+          content: Text(
+              'Are you sure you want to proceed with the payment of ${widget.bookingInfo.totalPrice}€?'),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Proceed'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _processPayment();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _processPayment() {
+    setState(() {
+      progressBarState.updateProgress(5);
+    });
+
+    Ticket ticket = Ticket(
+      id: const Uuid().v4(),
+      play: widget.play,
+      bookingInfo: widget.bookingInfo,
+      status: 'Successful',
+      barcode: Barcode.code128(),
+    );
+
+    user!.tickets.add(ticket);
+
+    // Update plays tickets
+    final playIndex = plays.indexWhere(
+      (play) => play.title == widget.play.title,
+    );
+
+    final String timeOfDay =
+        widget.play.afternoon == widget.bookingInfo.selectedTime
+            ? 'afternoon'
+            : 'night';
+
+    DateTime selectedDate = widget.bookingInfo.selectedDate;
+
+    if (plays[playIndex].availableDates.containsKey(selectedDate)) {
+      // Date already exists, check if timeOfDay exists
+      if (plays[playIndex]
+          .availableDates[selectedDate]!
+          .containsKey(timeOfDay)) {
+        // Add the ticket to the existing list for the specified timeOfDay
+        plays[playIndex].availableDates[selectedDate]![timeOfDay]!.add(ticket);
+      } else {
+        // Create a new list for the specified timeOfDay and add the ticket
+        plays[playIndex].availableDates[selectedDate]![timeOfDay] = [ticket];
+      }
+    } else {
+      // Date does not exist, create new entry for selectedDate and add the ticket
+      plays[playIndex].availableDates[selectedDate] = HashMap.from({
+        timeOfDay: [ticket]
+      });
+    }
+
+    // Show success dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const CustomPopUp(
+          success: true,
+        );
+      },
+    );
   }
 
   @override
@@ -142,6 +202,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     color: Colors.white,
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Text(
+                  'Hold a card for 2 seconds to auto-fill the payment details.',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 16,
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -209,66 +276,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   child: ElevatedButton(
                     onPressed: _validateFields()
                         ? () {
-                            setState(() {
-                              progressBarState.updateProgress(5);
-                            });
-
-                            Ticket ticket = Ticket(
-                              id: const Uuid().v4(),
-                              play: widget.play,
-                              bookingInfo: widget.bookingInfo,
-                              status: 'Successful',
-                              barcode: Barcode.code128(),
-                            );
-
-                            user!.tickets.add(ticket);
-
-                            // update plays tickets
-                            final playIndex = plays.indexWhere(
-                              (play) => play.title == widget.play.title,
-                            );
-
-                            final String timeOfDay = widget.play.afternoon ==
-                                    widget.bookingInfo.selectedTime
-                                ? 'afternoon'
-                                : 'night';
-
-                            DateTime selectedDate =
-                                widget.bookingInfo.selectedDate;
-
-                            if (plays[playIndex]
-                                .availableDates
-                                .containsKey(selectedDate)) {
-                              // Date already exists, check if timeOfDay exists
-                              if (plays[playIndex]
-                                  .availableDates[selectedDate]!
-                                  .containsKey(timeOfDay)) {
-                                // Add the ticket to the existing list for the specified timeOfDay
-                                plays[playIndex]
-                                    .availableDates[selectedDate]![timeOfDay]!
-                                    .add(ticket);
-                              } else {
-                                // Create a new list for the specified timeOfDay and add the ticket
-                                plays[playIndex].availableDates[selectedDate]![
-                                    timeOfDay] = [ticket];
-                              }
-                            } else {
-                              // Date does not exist, create new entry for selectedDate and add the ticket
-                              plays[playIndex].availableDates[selectedDate] =
-                                  HashMap.from({
-                                timeOfDay: [ticket]
-                              });
-                            }
-
-                            // Show success dialog
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return const CustomPopUp(
-                                  success: true,
-                                );
-                              },
-                            );
+                            _showConfirmationDialog(); 
                           }
                         : null,
                     style: ElevatedButton.styleFrom(

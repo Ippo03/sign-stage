@@ -1,6 +1,13 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sign_stage/models/main/ticket.dart';
 import 'package:sign_stage/widgets/custom/custom_barcode_image.dart';
 import 'package:sign_stage/widgets/custom/custom_detailed_column.dart';
@@ -12,6 +19,7 @@ class ETicketItem extends StatelessWidget {
   }) : super(key: key);
 
   final Ticket ticket;
+  final GlobalKey _globalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -105,9 +113,33 @@ class ETicketItem extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               Center(
-                child: CustomBarcodeImage(
-                  data: ticket.id.substring(0, 12),
-                  barcode: ticket.barcode,
+                child: RepaintBoundary(
+                  key: _globalKey,
+                  child: CustomBarcodeImage(
+                    data: ticket.id.substring(0, 12),
+                    barcode: ticket.barcode,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await captureAndSaveImage();
+                    await downloadTicketImage(ticket);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
+                  ),
+                  child: const Text(
+                    'Download E-Ticket',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -117,44 +149,48 @@ class ETicketItem extends StatelessWidget {
     );
   }
 
-  // Future<void> captureAndSaveImage() async {
-  //   await Future.delayed(Duration(milliseconds: 500)); // Ensure widget build completion
-  //   if (_globalKey.currentContext == null) {
-  //     print('GlobalKey current context is null');
-  //     return;
-  //   }
-  //   final RenderObject? renderObject = _globalKey.currentContext!.findRenderObject();
-  //   if (renderObject == null) {
-  //     print('Render object is null');
-  //     return;
-  //   }
+  Future<void> captureAndSaveImage() async {
+    try {
+      await Future.delayed(
+          Duration(milliseconds: 500)); // Ensure widget build completion
+      final RenderRepaintBoundary boundary = _globalKey.currentContext!
+          .findRenderObject() as RenderRepaintBoundary;
+      final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      final ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) {
+        throw Exception('ByteData is null');
+      }
+      final Uint8List pngBytes = byteData.buffer.asUint8List();
 
-  //   try {
-  //     final RenderRepaintBoundary boundary = renderObject as RenderRepaintBoundary;
-  //     final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-  //     final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-  //     if (byteData == null) {
-  //       print('ByteData is null');
-  //       return;
-  //     }
-  //     final Uint8List pngBytes = byteData.buffer.asUint8List();
+      final directory = await getTemporaryDirectory();
+      final filePath = '${directory.path}/ticket_${ticket.id}.png';
+      final File file = File(filePath);
+      await file.writeAsBytes(pngBytes);
+    } catch (e) {
+      print('Error capturing and saving image: $e');
+    }
+  }
 
-  //     // Save image to temporary directory
-  //     final directory = await getTemporaryDirectory();
-  //     final filePath = '${directory.path}/ticket_${ticket.id}.png';
-  //     final file = File(filePath);
-  //     await file.writeAsBytes(pngBytes);
+  Future<void> downloadTicketImage(Ticket ticket) async {
+    try {
+      Directory? directory = await getDownloadsDirectory();
+      if (directory == null) {
+        throw Exception("Unable to get downloads directory");
+      }
 
-  //     // Use flutter_downloader to download the file
-  //     await FlutterDownloader.enqueue(
-  //       url: file.path,
-  //       savedDir: directory.path,
-  //       fileName: 'ticket_${ticket.id}.png',
-  //       showNotification: true,
-  //       openFileFromNotification: true,
-  //     );
-  //   } catch (e) {
-  //     print('Error capturing and saving image: ${e.toString()}');
-  //   }
-  // }
+      final filePath = '${directory.path}/ticket_${ticket.id}.png';
+
+      await FlutterDownloader.enqueue(
+        url:
+            'file://$filePath', // Ensure URL has 'file://' protocol for local files
+        savedDir: directory.path,
+        fileName: 'ticket_${ticket.id}.png',
+        showNotification: true,
+        openFileFromNotification: true,
+      );
+    } catch (e) {
+      print('Error downloading image: $e');
+    }
+  }
 }

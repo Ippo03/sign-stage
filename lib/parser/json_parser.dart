@@ -15,7 +15,7 @@ List<Play> parsePlaysFromJson(String jsonString) {
             title: json['title'],
             headline: json['headline'],
             description: json['description'],
-            author: json['author'],
+            playwriter: json['playwriter'],
             cast: List<String>.from(json['cast']),
             genre: json['genre'],
             runtime: json['runtime'],

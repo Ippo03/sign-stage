@@ -50,6 +50,7 @@ dependencies:
   carousel_slider: ^4.2.1
   flutter_downloader: ^1.11.7
   path_provider: ^2.1.3
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,7 @@ flutter:
     - assets/icons/assistant.png
     - assets/icons/profile_pic.png
     - assets/images/logo.png
+    - assets/images/sign-language.png
     - assets/images/hamlet.jpg
     - assets/images/waiting_for_godot.jpg
     - assets/images/39_steps.jpeg

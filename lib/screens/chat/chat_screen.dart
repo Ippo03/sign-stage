@@ -10,6 +10,8 @@ import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
+import 'typing_indicator.dart'; // Import the new typing indicator widget
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -138,12 +140,12 @@ class _ChatScreenState extends State<ChatScreen> {
       _isGeneratingResponse = true;
     });
 
-    // sleep for half a second to simulate server response time
+    // wait for a second before sending the message
     await Future.delayed(const Duration(seconds: 1));
 
+    // Display typing indicator
     setState(() {
-      _messages
-          .add({'message': 'Waiting for your response...', 'isReceived': true});
+      _messages.add({'message': '', 'isReceived': true, 'isTyping': true});
     });
 
     // Send message to server and fetch response
@@ -157,6 +159,10 @@ class _ChatScreenState extends State<ChatScreen> {
       final responseData = jsonDecode(response.body);
       // Display the response character by character
       String responseText = responseData['response'];
+      setState(() {
+        _messages.removeLast(); 
+        _messages.add({'message': '', 'isReceived': true});
+      });
       for (int i = 0; i < responseText.length; i++) {
         if (!_isGeneratingResponse) {
           break;
@@ -173,6 +179,9 @@ class _ChatScreenState extends State<ChatScreen> {
       _speak(responseText);
     } else {
       print('Failed to send message: ${response.body}');
+      setState(() {
+        _messages.removeLast(); // Remove typing indicator
+      });
     }
   }
 
@@ -252,6 +261,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     showIcon: index == _messages.length - 1
                         ? _responseCompleted
                         : false,
+                    isTyping: _messages[index]['isTyping'] ?? false, // Check if the message is a typing indicator
                   );
                 },
               ),
@@ -303,7 +313,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget messageBubble(
       {required bool isReceived,
       required String message,
-      required bool showIcon}) {
+      required bool showIcon,
+      bool isTyping = false}) {
     return Row(
       mainAxisAlignment:
           isReceived ? MainAxisAlignment.start : MainAxisAlignment.end,
@@ -348,13 +359,16 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message,
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.black,
+                  if (isTyping)
+                    TypingIndicator() 
+                  else
+                    Text(
+                      message,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
                   if (isReceived && showIcon)
                     IconButton(
                       icon: const Icon(Icons.volume_up),
