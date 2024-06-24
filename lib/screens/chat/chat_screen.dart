@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   late stt.SpeechToText _speech;
   bool _isListening = false;
+  bool _isGeneratingResponse = false;
   String _text = '';
   String _message = '';
   Offset offset = const Offset(20.0, 20.0);
@@ -27,6 +29,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   bool _responseCompleted = false;
   final User user = User.instance!;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -34,8 +37,35 @@ class _ChatScreenState extends State<ChatScreen> {
     _speech = stt.SpeechToText();
   }
 
-  Future<void> _speak(String message) async {
+  void _speak(String message) {
     print('Speaking: $message');
+  }
+
+  // void _speak(String text) async {
+  //   await ttsInstance.setLanguage('en-US'); 
+
+  //   await ttsInstance.setPitch(1.0); // Set pitch (1.0 is the default)
+  //   await ttsInstance.speak(text); // Speak the provided text
+  // }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel timer when disposing of the screen
+    super.dispose();
+  }
+
+  void _startTimeout() {
+    // Cancel any previous timers before starting a new one
+    _timer?.cancel();
+    _timer = Timer(const Duration(seconds: 3), () {
+      // Timeout reached, stop speech recognition
+      if (_isListening) {
+        _speech.stop();
+        setState(() {
+          _isListening = false;
+        });
+      }
+    });
   }
 
   void _listen() async {
@@ -46,20 +76,31 @@ class _ChatScreenState extends State<ChatScreen> {
       );
       print('Available: $available');
       if (available) {
-        setState(() => _isListening = true);
+        setState(() {
+          _isListening = true;
+        });
+        _startTimeout(); // Start timeout countdown
         _speech.listen(
-          onResult: (val) => setState(() {
-            _text = val.recognizedWords;
-            _controller.text = _text;
-            _message = _text;
-          }),
+          onResult: (val) {
+            setState(() {
+              _text = val.recognizedWords;
+              _controller.text = _text;
+              _message = _text;
+            });
+            _startTimeout(); // Reset timeout on each new result
+          },
+          cancelOnError: true,
         );
       } else {
-        setState(() => _isListening = false);
+        setState(() {
+          _isListening = false;
+        });
         _speech.stop();
       }
     } else {
-      setState(() => _isListening = false);
+      setState(() {
+        _isListening = false;
+      });
       _speech.stop();
     }
   }
@@ -70,6 +111,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _message = _controller.text;
       _controller.clear();
       _responseCompleted = false;
+      _isGeneratingResponse = true;
     });
 
     // sleep for half a second to simulate server response time
@@ -82,7 +124,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Send message to server and fetch response
     final response = await http.post(
-      Uri.parse('https://6c8a-34-168-178-106.ngrok-free.app/send_message'),
+      Uri.parse('http://192.168.2.61:5000/send_message'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'message': _message}),
     );
@@ -92,11 +134,15 @@ class _ChatScreenState extends State<ChatScreen> {
       // Display the response character by character
       String responseText = responseData['response'];
       for (int i = 0; i < responseText.length; i++) {
+        if (!_isGeneratingResponse) {
+          break;
+        }
         await Future.delayed(const Duration(milliseconds: 50));
         setState(() {
           _messages.last['message'] = responseText.substring(0, i + 1);
           if (i == responseText.length - 1) {
             _responseCompleted = true;
+            _isGeneratingResponse = false;
           }
         });
       }
@@ -106,6 +152,13 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void _stopResponseGeneration() {
+    setState(() {
+      _isGeneratingResponse = false;
+      _responseCompleted = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final progressBarState = ProgressBarState();
@@ -113,31 +166,30 @@ class _ChatScreenState extends State<ChatScreen> {
     return ProgressBarProvider(
       state: progressBarState,
       child: Scaffold(
+        backgroundColor: Colors.grey[800],
+        appBar: AppBar(
           backgroundColor: Colors.grey[800],
-          appBar: AppBar(
-            backgroundColor: Colors.grey[800],
-            elevation: 0,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(0.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
-                    child: IconButton(
-                      icon:
-                          const Icon(Icons.arrow_back_ios, color: Colors.white),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
+          elevation: 0,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(0.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                  const SizedBox(width: 20.0),
-                  const ProgressBar(),
-                ],
-              ),
+                ),
+                const SizedBox(width: 20.0),
+                const ProgressBar(),
+              ],
             ),
           ),
+        ),
         body: GestureDetector(
           onPanDown: (details) {
             initialPosition = details.localPosition;
@@ -163,7 +215,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget chatContentWidget() {
     return Positioned.fill(
       child: Material(
-        color: Colors.white.withOpacity(0.3),
+        color: Colors.grey[800],
         child: Column(
           children: [
             Expanded(
@@ -181,7 +233,10 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             Container(
-              color: Colors.white,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(12.0),
+              ),
               child: Row(
                 children: [
                   IconButton(
@@ -205,9 +260,12 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.send),
-                    onPressed:
-                        _controller.text.isNotEmpty ? _sendMessage : null,
+                    icon: Icon(_isGeneratingResponse ? Icons.stop : Icons.send),
+                    onPressed: _isGeneratingResponse
+                        ? _stopResponseGeneration
+                        : _controller.text.isNotEmpty
+                            ? _sendMessage
+                            : null,
                   ),
                 ],
               ),
@@ -232,7 +290,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             if (isReceived)
               Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
+                padding: const EdgeInsets.only(bottom: 2.0, left: 4.0),
                 child: Image.asset(
                   'assets/icons/assistant.png',
                   width: 40,
@@ -241,12 +299,14 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             if (!isReceived)
               Container(
-                margin: const EdgeInsets.only(right: 8.0),
-                child: Image.asset(
-                  user.imageUrl,
-                  width: 40,
-                  height: 40,
-              
+                margin: const EdgeInsets.only(bottom: 2.0, right: 8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    user.imageUrl,
+                    width: 40,
+                    height: 40,
+                  ),
                 ),
               ),
             Container(
@@ -259,16 +319,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
-                color: isReceived ? Colors.grey[200] : Colors.blue[100],
+                color: isReceived ? Colors.white : Colors.grey[400],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     message,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14.0,
-                      color: isReceived ? Colors.black : Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   if (isReceived && showIcon)

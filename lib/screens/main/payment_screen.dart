@@ -228,16 +228,37 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               (play) => play.title == widget.play.title,
                             );
 
-                            final String timeOfDay = widget.play.afternoon == widget.bookingInfo.selectedTime
+                            final String timeOfDay = widget.play.afternoon ==
+                                    widget.bookingInfo.selectedTime
                                 ? 'afternoon'
                                 : 'night';
 
-                            plays[playIndex]
+                            DateTime selectedDate =
+                                widget.bookingInfo.selectedDate;
+
+                            if (plays[playIndex]
                                 .availableDates
-                                .putIfAbsent(widget.bookingInfo.selectedDate,
-                                    () => HashMap<String, List<Ticket?>>())
-                                .putIfAbsent(timeOfDay, () => [])
-                                .add(ticket);
+                                .containsKey(selectedDate)) {
+                              // Date already exists, check if timeOfDay exists
+                              if (plays[playIndex]
+                                  .availableDates[selectedDate]!
+                                  .containsKey(timeOfDay)) {
+                                // Add the ticket to the existing list for the specified timeOfDay
+                                plays[playIndex]
+                                    .availableDates[selectedDate]![timeOfDay]!
+                                    .add(ticket);
+                              } else {
+                                // Create a new list for the specified timeOfDay and add the ticket
+                                plays[playIndex].availableDates[selectedDate]![
+                                    timeOfDay] = [ticket];
+                              }
+                            } else {
+                              // Date does not exist, create new entry for selectedDate and add the ticket
+                              plays[playIndex].availableDates[selectedDate] =
+                                  HashMap.from({
+                                timeOfDay: [ticket]
+                              });
+                            }
 
                             // Show success dialog
                             showDialog(

@@ -11,9 +11,9 @@ import 'package:table_calendar/table_calendar.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({
-    super.key,
+    Key? key,
     required this.play,
-  });
+  }) : super(key: key);
 
   final Play play;
 
@@ -22,7 +22,14 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  DateTime selectedDate = DateTime(2024, 6, 8);
+  late DateTime selectedDate;
+  late DateTime formattedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = widget.play.availableDates.entries.first.key;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +91,9 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Widget _buildCalendar() {
+    print('Available Dates ${widget.play.availableDates}');
+    print('First Date ${widget.play.availableDates.entries.first.key}');
+    print('Last Date ${widget.play.availableDates.entries.last.key}');
     return Container(
       height: 400,
       decoration: BoxDecoration(
@@ -92,7 +102,7 @@ class _BookingScreenState extends State<BookingScreen> {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: TableCalendar(
-        focusedDay: widget.play.availableDates.entries.first.key,
+        focusedDay: selectedDate,
         firstDay: widget.play.availableDates.entries.first.key,
         lastDay: widget.play.availableDates.entries.last.key,
         calendarFormat: CalendarFormat.month,
@@ -101,19 +111,18 @@ class _BookingScreenState extends State<BookingScreen> {
         },
         onDaySelected: (selectedDay, focusedDay) {
           setState(() {
-            print('Selected Date: $selectedDay');
-            selectedDate = selectedDay;
+            selectedDate = DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
           });
         },
         selectedDayPredicate: (day) {
           return isSameDay(selectedDate, day);
         },
-        headerStyle: HeaderStyle(
+        headerStyle: const HeaderStyle(
           titleCentered: true,
           formatButtonVisible: false,
         ),
         calendarStyle: CalendarStyle(
-          todayDecoration: BoxDecoration(
+          todayDecoration: const BoxDecoration(
             color: Colors.blueAccent,
             shape: BoxShape.circle,
           ),
@@ -121,7 +130,7 @@ class _BookingScreenState extends State<BookingScreen> {
             color: Colors.blueAccent.withOpacity(0.5),
             shape: BoxShape.circle,
           ),
-          selectedTextStyle: TextStyle(color: Colors.white),
+          selectedTextStyle: const TextStyle(color: Colors.white),
         ),
       ),
     );
@@ -141,11 +150,16 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _buildTimeSlot(String time, ProgressBarState progressBarState) {
     String timeOfDay = widget.play.afternoon == time ? 'afternoon' : 'night';
-    final seatColor = widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay) == 'available'
-        ? Colors.green
-        : Colors.red;
-      
-    final hearingStatus = widget.play.hearingImpaired ? 'Yes' : 'No';
+    final seatColor =
+        widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay) ==
+                'Available'
+            ? Colors.green
+            : widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay) ==
+                    'Few Available'
+                ? Colors.orange
+                : Colors.red;
+
+    final hearingImpairedColor = widget.play.hearingImpairedStatusForDateAndTime(selectedDate, timeOfDay) == false ? Colors.green : Colors.red;
 
     return InkWell(
       onTap: () {
@@ -182,13 +196,39 @@ class _BookingScreenState extends State<BookingScreen> {
               time,
               style: TextStyle(fontSize: 20, color: Colors.grey[800]),
             ),
-            Text(
-              'Seat status: ${widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay)}',
-              style: TextStyle(color: seatColor),
+            Row(
+              children: [
+                Text(
+                  'Seat status: ${widget.play.ticketStatusForDateAndTime(selectedDate, timeOfDay)}',
+                  style: TextStyle(color: Colors.grey[800]),
+                ),
+                const SizedBox(width: 10.0),
+                Icon(
+                  Icons.circle,
+                  color: seatColor,
+                  size: 16.0,
+                ),
+              ],
             ),
-            Text(
-              'Hearing impaired: $hearingStatus',
-              style: TextStyle(color: Colors.white),
+            Row(
+              children: [
+                Text(
+                  'Hearing impaired: ${widget.play.hearingImpairedStatusForDateAndTime(selectedDate, timeOfDay) == true ? 'Not Available' : 'Available'}',
+                  style: TextStyle(color: Colors.grey[800]),
+                ),
+                const SizedBox(width: 10.0),
+                Container(
+                  decoration: BoxDecoration(
+                    color: hearingImpairedColor,
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: const Icon(
+                    Icons.hearing,
+                    color: Colors.white,
+                    size: 16.0,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

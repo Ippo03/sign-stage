@@ -32,7 +32,7 @@ class CustomPlayCard extends StatelessWidget {
                   children: [
                     Text(
                       '${play.hall}: ${play.title}',
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.left,
                     ),
                     Text(

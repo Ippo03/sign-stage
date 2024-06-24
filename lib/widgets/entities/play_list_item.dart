@@ -6,9 +6,9 @@ import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
 
 class PlayListItem extends StatelessWidget {
   const PlayListItem({
-    super.key,
+    Key? key,
     required this.play,
-  });
+  }) : super(key: key);
 
   final Play play;
 
@@ -22,19 +22,33 @@ class PlayListItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12.0),
-              child: SizedBox(
-                height: 150,
-                width: double.infinity,
-                child: Image.asset(
-                  play.imageUrl,
-                  fit: BoxFit.cover,
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: SizedBox(
+                  height: 150,
+                  width: double.infinity,
+                  child: Image.asset(
+                    play.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
+              if (play.hearingImpaired)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.8),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: const Icon(Icons.hearing, color: Colors.blue),
+                  ),
+                ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -49,56 +63,44 @@ class PlayListItem extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8.0),
-                // Text(
-                //   'Starting: ${play.runtime}',
-                //   style: const TextStyle(
-                //     fontSize: 14,
-                //     color: Colors.white,
-                //   ),
-                // ),
-                if (play.hearingImpaired)
-                  const Icon(Icons.hearing, color: Colors.blue),
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => PlayDetailsScreen(play: play),
-                      ),
-                    );
-                  },
-                  child: const Text('Info'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
                 ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue,
-                  ),
-                  onPressed: () {
-                    progressBarState.updateProgress(2);
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => PlayDetailsScreen(play: play),
+                    ),
+                  );
+                },
+                child: const Text('Info'),
+              ),
+              const SizedBox(width: 24.0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                ),
+                onPressed: () {
+                  progressBarState.updateProgress(2);
 
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => BookingScreen(play: play),
-                      ),
-                    );
-                  },
-                  child: const Text('Book'),
-                ),
-              ],
-            ),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BookingScreen(play: play),
+                    ),
+                  );
+                },
+                child: const Text('Book'),
+              ),
+            ],
           ),
           const SizedBox(height: 8.0),
         ],

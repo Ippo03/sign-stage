@@ -80,7 +80,11 @@ class Play {
   bool isSoldOutForDateAndTime(DateTime date, String playType) {
     if (availableDates.containsKey(date) &&
         availableDates[date]!.containsKey(playType)) {
-      return availableDates[date]![playType]!.length >= totalAvailableTickets;
+         int ticketsSold = 0;
+          for (var ticket in availableDates[date]![playType]!) {
+            ticketsSold += ticket!.bookingInfo.selectedSeats.length;
+          }
+      return ticketsSold >= totalAvailableTickets;
     }
     return false;
   }
@@ -89,20 +93,40 @@ class Play {
   int availableTicketsForDateAndTime(DateTime date, String playType) {
     if (availableDates.containsKey(date) &&
         availableDates[date]!.containsKey(playType)) {
-      return totalAvailableTickets - availableDates[date]![playType]!.length;
+          int ticketsSold = 0;
+          for (var ticket in availableDates[date]![playType]!) {
+            ticketsSold += ticket!.bookingInfo.selectedSeats.length;
+          }
+      return totalAvailableTickets - ticketsSold;
     }
     return totalAvailableTickets;
   }
 
 // Function that finds the status of the tickets for a specific date and play type (sold out, few available, available)
   String ticketStatusForDateAndTime(DateTime date, String playType) {
+    print("im here");
     if (isSoldOutForDateAndTime(date, playType)) {
-      return 'sold out';
+      return 'Sold Out';
     } else if (availableTicketsForDateAndTime(date, playType) <=
         totalAvailableTickets / 5) {
-      return 'few available';
+      return 'Few Available';
     } else {
-      return 'available';
+      return 'Available';
+    }
+  }
+
+  bool hearingImpairedStatusForDateAndTime(DateTime date, String playType) {
+    if (isSoldOutForDateAndTime(date, playType)) return false;
+
+    const hallAHearingImpairedSeats = ['A1', 'B1', 'A7', 'B7'];
+    const hallBHearingImpairedSeats = ['A1', 'B1', 'C1', 'A8', 'B8', 'C8'];
+
+    List<String> reservedSeats = getReservedSeatsForDateAndTime(date, playType);
+    
+    if (hall == 'Hall A') {
+      return hallAHearingImpairedSeats.every((seat) => reservedSeats.contains(seat));
+    } else {
+      return hallBHearingImpairedSeats.every((seat) => reservedSeats.contains(seat));
     }
   }
 

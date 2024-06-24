@@ -30,13 +30,13 @@ const jsonString = '''
     "regularTickets": {
       "name": "regular",
       "price": 25,
-      "availableTickets": 30,
+      "availableTickets": 31,
       "soldTickets": 0
     },
     "specialNeedsTickets": {
       "name": "special needs",
       "price": 18,
-      "availableTickets": 10,
+      "availableTickets": 4,
       "soldTickets": 0
     },
     "hall": "Hall A",
@@ -71,13 +71,13 @@ const jsonString = '''
     "regularTickets": {
       "name": "regular",
       "price": 20,
-      "availableTickets": 40,
+      "availableTickets": 50,
       "soldTickets": 0
     },
     "specialNeedsTickets": {
       "name": "special needs",
       "price": 15,
-      "availableTickets": 10,
+      "availableTickets": 6,
       "soldTickets": 0
     },
     "hall": "Hall B",
@@ -112,13 +112,13 @@ const jsonString = '''
     "regularTickets": {
       "name": "regular",
       "price": 18,
-      "availableTickets": 30,
+      "availableTickets": 31,
       "soldTickets": 0
     },
     "specialNeedsTickets": {
       "name": "special needs",
       "price": 13,
-      "availableTickets": 10,
+      "availableTickets": 4,
       "soldTickets": 0
     },
     "hall": "Hall A",
@@ -153,13 +153,13 @@ const jsonString = '''
     "regularTickets": {
       "name": "regular",
       "price": 24,
-      "availableTickets": 40,
+      "availableTickets": 50,
       "soldTickets": 0
     },
     "specialNeedsTickets": {
       "name": "special needs",
       "price": 18,
-      "availableTickets": 10,
+      "availableTickets": 6,
       "soldTickets": 0
     },
     "hall": "Hall B",

@@ -36,7 +36,7 @@ class BookingInfo {
     String weekday = weekdayFormat.format(selectedDate);
     String month = monthFormat.format(selectedDate);
 
-    return '$weekday, ${selectedDate.day} $month ${selectedDate.year} -- $selectedTime';
+    return '$weekday, ${selectedDate.day} $month ${selectedDate.year} at $selectedTime';
   }
 
   void setSeats(List<String> selectedSeats) {
