@@ -34,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _responseCompleted = false;
   late bool _showInitialMessage;
   final User user = User.instance!;
-  Timer? _timer;
+  Color _micIconColor = Colors.grey;
 
   @override
   void initState() {
@@ -47,12 +47,12 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _initializeChat() {
-  setState(() {
-    _messages.add(Message(text: '', isReceived: true));
-  });
+    setState(() {
+      _messages.add(Message(text: '', isReceived: true));
+    });
 
-  String initialMessage = 
-  """Hello! Welcome to Sign Stage Theater's AI assistant. I'm here to assist you with the following: 
+    String initialMessage =
+        """Hello! Welcome to Sign Stage Theater's AI assistant. I'm here to assist you with the following: 
   - Information about current and upcoming plays
   - Booking or canceling tickets
   - Viewing your purchased tickets
@@ -60,8 +60,8 @@ class _ChatScreenState extends State<ChatScreen> {
   - Learning more about Sign Stage Theater
   - Contacting a theater employee
   How can I help you today?""";
-  _displayMessageCharacterByCharacter(initialMessage);
-}
+    _displayMessageCharacterByCharacter(initialMessage);
+  }
 
   Future<void> _displayMessageCharacterByCharacter(String message) async {
     for (int i = 0; i < message.length; i++) {
@@ -79,36 +79,22 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    _timer?.cancel();
     super.dispose();
-  }
-
-  void _startTimeout() {
-    // Cancel any previous timers before starting a new one
-    _timer?.cancel();
-    _timer = Timer(const Duration(seconds: 2), () {
-      // Timeout reached, stop speech recognition
-      if (_isListening) {
-        _speech.stop();
-        setState(() {
-          _isListening = false;
-        });
-      }
-    });
   }
 
   void _listen() async {
     if (!_isListening) {
       bool available = await _speech.initialize(
-        onStatus: (val) => print('onStatus: $val'),
+        onStatus: (val) => _onSpeechStatus(val),
         onError: (val) => print('onError: $val'),
       );
       print('Available: $available');
       if (available) {
         setState(() {
           _isListening = true;
+          _micIconColor =
+              Colors.red; // Change mic icon color to red when listening
         });
-        _startTimeout(); // Start timeout countdown
         _speech.listen(
           onResult: (val) {
             setState(() {
@@ -116,21 +102,35 @@ class _ChatScreenState extends State<ChatScreen> {
               _controller.text = _text;
               _message = _text;
             });
-            _startTimeout(); // Reset timeout on each new result
           },
           cancelOnError: true,
         );
       } else {
         setState(() {
           _isListening = false;
+          _micIconColor =
+              Colors.grey; // Change mic icon color to grey when not listening
         });
         _speech.stop();
       }
     } else {
       setState(() {
         _isListening = false;
+        _micIconColor =
+            Colors.grey; // Change mic icon color to grey when not listening
       });
       _speech.stop();
+    }
+  }
+
+  void _onSpeechStatus(String status) {
+    print('onStatus: $status');
+    if (status == 'done' || status == 'notListening') {
+      setState(() {
+        _isListening = false;
+        _micIconColor =
+            Colors.grey; // Change mic icon color to grey when not listening
+      });
     }
   }
 
@@ -181,7 +181,8 @@ class _ChatScreenState extends State<ChatScreen> {
           }
         });
       }
-      _speak(responseText);
+      Future.delayed(const Duration(milliseconds: 500));
+
       if (canNavigateToScreen(responseCode)) {
         print('Navigating to screen...');
         print('Response code: $responseCode');
@@ -193,11 +194,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   responseCode: responseCode,
                 ),
                 isReceived: true,
+                showAssistantIcon: false,
               ),
             );
           },
         );
       }
+      _speak(responseText);
     } else {
       print('Failed to send message: ${response.body}');
       setState(() {
@@ -308,10 +311,11 @@ class _ChatScreenState extends State<ChatScreen> {
                     isReceived: message.isReceived,
                     message: message.text,
                     widget: message.widget,
-                    showIcon: index == _messages.length - 1
+                    showVolumeIcon: index == _messages.length - 1
                         ? _responseCompleted
                         : false,
                     isTyping: message.isTyping ?? false,
+                    showAssistantIcon: message.showAssistantIcon,
                   );
                 },
               ),
@@ -324,7 +328,8 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
+                    icon: Icon(_isListening ? Icons.mic : Icons.mic_none,
+                        color: _micIconColor),
                     onPressed: _listen,
                   ),
                   Expanded(
@@ -364,9 +369,12 @@ class _ChatScreenState extends State<ChatScreen> {
     required bool isReceived,
     String? message,
     Widget? widget,
-    required bool showIcon,
+    required bool showVolumeIcon,
+    required bool showAssistantIcon,
     bool isTyping = false,
   }) {
+    bool isNavigationMessage = widget != null;
+
     return Row(
       mainAxisAlignment:
           isReceived ? MainAxisAlignment.start : MainAxisAlignment.end,
@@ -375,7 +383,7 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment:
               isReceived ? CrossAxisAlignment.start : CrossAxisAlignment.end,
           children: [
-            if (isReceived)
+            if (isReceived && showAssistantIcon)
               Padding(
                 padding: const EdgeInsets.only(bottom: 2.0, left: 4.0),
                 child: Image.asset(
@@ -400,13 +408,17 @@ class _ChatScreenState extends State<ChatScreen> {
               constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.7,
               ),
-              margin:
+              margin: 
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-              padding:
+              padding: isNavigationMessage ? EdgeInsets.zero :
                   const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
-                color: isReceived ? Colors.white : Colors.grey[400],
+                color: isReceived
+                    ? isNavigationMessage
+                        ? null
+                        : Colors.white
+                    : Colors.grey[400],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,7 +435,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         color: Colors.black,
                       ),
                     ),
-                  if (isReceived && showIcon && message != null)
+                  if (isReceived && showVolumeIcon && message != null)
                     IconButton(
                       icon: const Icon(Icons.volume_up),
                       onPressed: () {

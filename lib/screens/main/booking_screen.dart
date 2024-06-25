@@ -85,6 +85,7 @@ class _BookingScreenState extends State<BookingScreen> {
       child: Column(
         children: [
           _buildCalendar(),
+          const SizedBox(height: 10.0),
         ],
       ),
     );
@@ -118,7 +119,8 @@ class _BookingScreenState extends State<BookingScreen> {
         headerStyle: const HeaderStyle(
           titleCentered: true,
           formatButtonVisible: false,
-          titleTextStyle: TextStyle(color: Colors.white),
+          titleTextStyle: TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
           leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
           rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
         ),
@@ -127,11 +129,22 @@ class _BookingScreenState extends State<BookingScreen> {
             color: Colors.blueAccent,
             shape: BoxShape.circle,
           ),
+          todayTextStyle:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           selectedDecoration: BoxDecoration(
             color: Colors.blueAccent.withOpacity(0.5),
             shape: BoxShape.circle,
           ),
-          selectedTextStyle: const TextStyle(color: Colors.white),
+          selectedTextStyle:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          weekendTextStyle:
+              const TextStyle(color: Colors.white),
+          outsideTextStyle: const TextStyle(
+              color: Colors
+                  .grey), // Grey color for days outside the month
+          outsideDecoration: const BoxDecoration(
+              color: Colors
+                  .transparent), // Example: Transparent background for days outside the month
           defaultTextStyle: const TextStyle(color: Colors.white),
         ),
       ),

@@ -12,7 +12,7 @@ class BaseScreen extends StatefulWidget {
 }
 
 class _BaseScreenState extends State<BaseScreen> {
-  Offset _bubblePosition = Offset(0, 0);
+  Offset _bubblePosition = const Offset(0, 0);
   final double padding = 10.0;
 
   @override
@@ -21,12 +21,8 @@ class _BaseScreenState extends State<BaseScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _bubblePosition = Offset(
-          MediaQuery.of(context).size.width -
-              80 -
-              padding, // Set the initial position with padding
-          MediaQuery.of(context).size.height -
-              80 -
-              padding, // Set the initial position with padding
+          MediaQuery.of(context).size.width - 80,
+          70,
         );
       });
     });
@@ -83,7 +79,7 @@ class _BaseScreenState extends State<BaseScreen> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ChatScreen()),
+                    MaterialPageRoute(builder: (context) => const ChatScreen()),
                   );
                 },
                 child: Container(
@@ -94,11 +90,8 @@ class _BaseScreenState extends State<BaseScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(0.0),
                     decoration: BoxDecoration(
-                      border: Border.all(
-                          color: Colors.blueAccent,
-                          width: 2.0), // Outline color and width
-                      borderRadius: BorderRadius.circular(
-                          30.0), // Optional: Make the border rounded
+                      border: Border.all(color: Colors.blueAccent, width: 2.0),
+                      borderRadius: BorderRadius.circular(30.0),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -113,12 +106,13 @@ class _BaseScreenState extends State<BaseScreen> {
                 ),
               ),
               childWhenDragging: Container(),
+              onDragEnd: _onDragEnd,
               child: ChatBubble(
                 isExpanded: true,
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ChatScreen()),
+                    MaterialPageRoute(builder: (context) => const ChatScreen()),
                   );
                 },
                 child: Container(
@@ -131,9 +125,9 @@ class _BaseScreenState extends State<BaseScreen> {
                     decoration: BoxDecoration(
                       border: Border.all(
                           color: Colors.blueAccent,
-                          width: 2.0), // Outline color and width
+                          width: 2.0), 
                       borderRadius: BorderRadius.circular(
-                          30.0), // Optional: Make the border rounded
+                          30.0), 
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -147,7 +141,6 @@ class _BaseScreenState extends State<BaseScreen> {
                   ),
                 ),
               ),
-              onDragEnd: _onDragEnd,
             ),
           ),
         ],

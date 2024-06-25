@@ -199,13 +199,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                child: Text(
                   'Payment Method',
                   style: TextStyle(
                     color: Colors.white,
@@ -213,48 +213,57 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
                   'Hold a card for 2 seconds to auto-fill the payment details.',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 5),
-                SizedBox(
-                  height: 260,
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: _onPageChanged,
-                    itemCount: user!.creditCards.length,
-                    itemBuilder: (context, index) {
-                      return CustomCreditCard(
+              ),
+              const SizedBox(height: 5),
+              SizedBox(
+                height: 260,
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: _onPageChanged,
+                  itemCount: user!.creditCards.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: CustomCreditCard(
                         index: index,
                         onCardSelected: _onCardSelected,
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(
-                    user!.creditCards.length,
-                    (index) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                      width: 8.0,
-                      height: 8.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _currentCardIndex == index
-                            ? Colors.blue
-                            : Colors.grey,
                       ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  user!.creditCards.length,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                    width: 8.0,
+                    height: 8.0,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentCardIndex == index
+                          ? Colors.blue
+                          : Colors.grey,
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
+              ),
+              const SizedBox(height: 20),
+              const Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
                   'Payment Details',
                   style: TextStyle(
                     color: Colors.white,
@@ -262,23 +271,35 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 5),
-                CustomTextField(
+              ),
+              const SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: CustomTextField(
                   label: 'Your Email',
                   controller: emailController,
                   hintText: 'johnDoe@example.com',
                 ),
-                CustomTextField(
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: CustomTextField(
                   label: 'Cardholder Name',
                   controller: cardholderNameController,
                   hintText: 'John Doe',
                 ),
-                CustomTextField(
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: CustomTextField(
                   label: 'Card Number',
                   controller: cardNumberController,
                   hintText: '**** **** **** 51446',
                 ),
-                Row(
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
                   children: [
                     Expanded(
                       child: CustomTextField(
@@ -297,30 +318,31 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: _validateFields()
-                        ? () {
-                            _showConfirmationDialog(); 
-                          }
-                        : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 50, vertical: 15),
-                    ),
-                    child: Text(
-                      'Pay Now ${widget.bookingInfo.totalPrice} €',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _validateFields()
+                      ? () {
+                          _showConfirmationDialog();
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
+                  ),
+                  child: Text(
+                    'Pay Now ${widget.bookingInfo.totalPrice} €',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 25),
+            ],
           ),
         ),
       ),
