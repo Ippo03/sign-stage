@@ -34,6 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   late bool _showInitialMessage;
   final User user = User.instance!;
   Color _micIconColor = Colors.grey;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _messages.last.text = message.substring(0, i + 1);
       });
+      _scrollToBottom();
     }
     _speak(message);
   }
@@ -78,6 +80,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -115,8 +118,7 @@ class _ChatScreenState extends State<ChatScreen> {
     } else {
       setState(() {
         _isListening = false;
-        _micIconColor =
-            Colors.grey; 
+        _micIconColor = Colors.grey;
       });
       _speech.stop();
     }
@@ -127,8 +129,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (status == 'done' || status == 'notListening') {
       setState(() {
         _isListening = false;
-        _micIconColor =
-            Colors.grey; 
+        _micIconColor = Colors.grey;
       });
     }
   }
@@ -142,6 +143,8 @@ class _ChatScreenState extends State<ChatScreen> {
       _isGeneratingResponse = true;
     });
 
+    _scrollToBottom();
+
     // wait for a second before sending the message
     await Future.delayed(const Duration(seconds: 1));
 
@@ -150,9 +153,11 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.add(Message(text: '', isReceived: true, isTyping: true));
     });
 
+    _scrollToBottom();
+
     // Send message to server and fetch response
     final response = await http.post(
-      Uri.parse('http://192.168.2.61:5000/send_message'),
+      Uri.parse('https://fc0e-35-227-22-95.ngrok-free.app/send_message'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'message': _message}),
     );
@@ -162,50 +167,65 @@ class _ChatScreenState extends State<ChatScreen> {
       // Display the response character by character
       String responseText = responseData['response'];
       String responseCode = responseData['code'];
+      
+      // The following comes from the backend
+      // USER_CHOSE_THE_PLAY- + playFound[0] or USER_CHOSE_THE_PLAY
+      // when the - exists there is also a play following
+      // extract also the play name from the response
+      // if the plays does not exist just get the code
+      if (responseCode.startsWith('USER_CHOSE_THE_PLAY-')) {
+        String playName = responseCode.split('-')[1];
+        responseCode = 'USER_CHOSE_THE_PLAY';
+      } 
+
+      setState(() {
+        _messages.removeLast(); // Remove typing indicator
+      });
 
       bool canNavigate = canNavigateToScreen(responseCode);
+      // canNavigate = false; // Always allow navigation for now
+      String screen = mapCodeToScreen(responseCode);
 
+      // add to the responseText a press the button below to navigate to the screen
       if (canNavigate) {
-        // add to the responseText a message 'Press the button below to navigate to the screen'
-        responseText += '\n\nPress the button below to navigate to the screen';
+        responseText +=
+            '\n\nPress the button below to continue to the ${screen.toLowerCase()} or keep chatting with me.';
       }
+
       print(('Code: $responseCode'));
-      setState(() {
-        _messages.removeLast();
-        _messages.add(Message(text: '', isReceived: true));
-      });
+
       for (int i = 0; i < responseText.length; i++) {
         if (!_isGeneratingResponse) {
           break;
         }
         await Future.delayed(const Duration(milliseconds: 50));
         setState(() {
-          _messages.last.text = responseText.substring(0, i + 1);
-          if (i == responseText.length - 1) {
-            _responseCompleted = true;
-            _isGeneratingResponse = false;
+          if (i == 0) {
+            // Start new message with first character
+            _messages.add(Message(
+                text: responseText.substring(0, i + 1), isReceived: true));
+          } else {
+            // Append next character to last message
+            _messages.last.text = responseText.substring(0, i + 1);
+            if (i == responseText.length - 1) {
+              _responseCompleted = true;
+              _isGeneratingResponse = false;
+
+              // If navigation is possible, add the NavigationMessage widget
+              if (canNavigate) {
+                _messages.last = Message(
+                  widget: NavigationMessage(
+                      responseText: responseText, responseCode: responseCode),
+                  isReceived: true,
+                );
+              }
+            }
           }
         });
       }
-      Future.delayed(const Duration(milliseconds: 500));
 
-      if (canNavigateToScreen(responseCode)) {
-        print('Navigating to screen...');
-        print('Response code: $responseCode');
-        setState(
-          () {
-            _messages.add(
-              Message(
-                widget: NavigationMessage(
-                  responseCode: responseCode,
-                ),
-                isReceived: true,
-                showAssistantIcon: false,
-              ),
-            );
-          },
-        );
-      }
+      _scrollToBottom();
+
       _speak(responseText);
     } else {
       print('Failed to send message: ${response.body}');
@@ -215,8 +235,39 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  void _scrollToBottom() {
+    Future.delayed(Duration(milliseconds: 100), () {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
+  static String mapCodeToScreen(String code) {
+    switch (code) {
+      case 'USER_WANTS_TO_GET_THEATER_INFO':
+        return 'theater info';
+      case 'USER_WANTS_TO_GET_DIRECTIONS':
+        return 'theater info';
+      case 'USER_WANTS_TO_CONTACT_A_HUMAN':
+        return 'theater info';
+      case 'USER_WANTS_TO_SUBMIT_A_COMPLAINT':
+        return 'complaint form';
+      case 'USER_CANCELS_TICKET':
+        return 'your e-tickets';
+      case 'USER_SEES_PURCHASED_TICKETS':
+        return 'your e-tickets';
+      default:
+        return 'ChatScreen';
+    }
+  }
+
   static bool canNavigateToScreen(String code) {
     switch (code) {
+      case 'USER_WANTS_TO_GET_PLAY_INFO':
+        return true; // check again
       case 'USER_WANTS_TO_GET_THEATER_INFO':
         return true;
       case 'USER_WANTS_TO_GET_DIRECTIONS':
@@ -229,18 +280,18 @@ class _ChatScreenState extends State<ChatScreen> {
         return true;
       case 'USER_SEES_PURCHASED_TICKETS':
         return true;
-      case 'USER_INPUT_NOT_UNDERSTANDABLE':
-        return false;
       case 'USER_INPUT_UNRELATED_TO_THEATER':
-        return false;
-      case 'USER_GREETS':
-        return false;
+        return false; // has extra functionality
+      case 'USER_INPUT_NOT_UNDERSTANDABLE':
+        return false; // has extra functionality
       case 'OTHER':
         return false;
       default:
         return false;
     }
   }
+
+  static String parseCode
 
   void _stopResponseGeneration() {
     setState(() {
@@ -278,10 +329,9 @@ class _ChatScreenState extends State<ChatScreen> {
                 const Text(
                   'Sign Stage Theater Assistant',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20
-                  ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
                 ),
               ],
             ),
@@ -421,10 +471,12 @@ class _ChatScreenState extends State<ChatScreen> {
               constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.7,
               ),
-              margin: 
+              margin:
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
-              padding: isNavigationMessage ? EdgeInsets.zero :
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+              padding: isNavigationMessage
+                  ? EdgeInsets.zero
+                  : const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 10.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
                 color: isReceived

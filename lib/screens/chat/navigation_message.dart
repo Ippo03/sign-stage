@@ -5,47 +5,75 @@ import 'package:sign_stage/screens/secondary/theater_info_screen.dart';
 
 class NavigationMessage extends StatelessWidget {
   final String responseCode;
+  final String responseText;
 
   const NavigationMessage({
     Key? key,
     required this.responseCode,
+    required this.responseText,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        print('Navigating to the appropriate screen...');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => mapResponseCodeToWidget(responseCode)!,
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width * 0.7,
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.0),
+        color: Colors.white,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            responseText,
+            style: const TextStyle(color: Colors.black, fontSize: 14.0),
           ),
-        );
-      },
-      borderRadius: BorderRadius.circular(24.0), // Adjust the border radius as needed
-      splashColor: Colors.blue.withOpacity(0.5), // Customize the splash color
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(24.0),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Navigate to appropriate screen',
-              style: TextStyle(color: Colors.white, fontSize: 13.0),
+          const SizedBox(height: 10.0),
+          InkWell(
+            onTap: () {
+              print('Navigating to the appropriate screen...');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => mapResponseCodeToWidget(responseCode)!,
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(
+                24.0), 
+            splashColor:
+                Colors.blue.withOpacity(0.5), // Customize the splash color
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(24.0),
+              ),
+              child: const Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Go to screen',
+                      style: TextStyle(color: Colors.white, fontSize: 13.0),
+                    ),
+                    SizedBox(width: 8.0),
+                    Icon(
+                      Icons.arrow_forward,
+                      color: Colors.white,
+                      size: 15,
+                    ),
+                  ],
+                ),
+              ),
             ),
-            SizedBox(width: 8.0),
-            Icon(
-              Icons.open_in_new,
-              color: Colors.white,
-              size: 15,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

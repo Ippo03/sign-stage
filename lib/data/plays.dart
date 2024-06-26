@@ -172,3 +172,12 @@ const jsonString = '''
 ''';
 
 List<Play> plays = parsePlaysFromJson(jsonString);
+
+Play? findPlayByTitle(List<Play> plays, String title) {
+  for (Play play in plays) {
+    if (play.title.toLowerCase() == title.toLowerCase()) {
+      return play;
+    }
+  }
+  return null;
+}
