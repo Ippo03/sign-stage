@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Message {
   String? text;
-  final Widget? widget;
+  Widget? widget;
   final bool isReceived;
   final bool? isTyping;
   bool showAssistantIcon;

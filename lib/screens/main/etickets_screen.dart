@@ -1,11 +1,9 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sign_stage/models/main/ticket.dart';
 import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/screens/main/home_screen.dart';
 import 'package:sign_stage/widgets/custom/custom_info_field.dart';
-import 'package:sign_stage/widgets/custom/custom_pop_up.dart';
 import 'package:sign_stage/widgets/entities/eticket_item.dart';
 
 class ETicketsScreen extends StatefulWidget {
@@ -37,8 +35,6 @@ class _ETicketsScreenState extends State<ETicketsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(' Tickets len ${user!.tickets.length}');
-
     return Scaffold(
       backgroundColor: Colors.grey[800],
       appBar: AppBar(

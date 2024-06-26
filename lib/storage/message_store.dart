@@ -11,4 +11,8 @@ class MessageStore {
   MessageStore._internal();
 
   final List<Message> messages = [];
+  int misunderstandingsCount = 0;
+  bool isChatLocked = false;
+  int chatRefreshedCount = 0;
+  bool madeClearingAfterReset = false;
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/models/util/message.dart';
+import 'package:sign_stage/screens/chat/navigation_mapper.dart';
 import 'package:sign_stage/screens/chat/navigation_message.dart';
 import 'package:sign_stage/storage/message_store.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
@@ -33,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _responseCompleted = false;
   late bool _showInitialMessage;
   final User user = User.instance!;
-  Color _micIconColor = Colors.grey;
+  Color _micIconColor = const Color.fromARGB(255, 120, 119, 119);
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -44,6 +45,13 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_showInitialMessage) {
       _initializeChat();
     }
+  }
+
+  void onResetChat() {
+    MessageStore().isChatLocked = false;
+    MessageStore().misunderstandingsCount = 0;
+    MessageStore().chatRefreshedCount++;
+    _initializeChat();
   }
 
   void _initializeChat() {
@@ -67,9 +75,8 @@ class _ChatScreenState extends State<ChatScreen> {
     for (int i = 0; i < message.length; i++) {
       await Future.delayed(const Duration(milliseconds: 50));
       setState(() {
-        _messages.last.text = message.substring(0, i + 1);
+        _messages.last.text = message.substring(0, i + 4);
       });
-      _scrollToBottom();
     }
     _speak(message);
   }
@@ -110,15 +117,15 @@ class _ChatScreenState extends State<ChatScreen> {
       } else {
         setState(() {
           _isListening = false;
-          _micIconColor =
-              Colors.grey; // Change mic icon color to grey when not listening
+          _micIconColor = const Color.fromARGB(255, 120, 119,
+              119); // Change mic icon color to grey when not listening
         });
         _speech.stop();
       }
     } else {
       setState(() {
         _isListening = false;
-        _micIconColor = Colors.grey;
+        _micIconColor = const Color.fromARGB(255, 120, 119, 119);
       });
       _speech.stop();
     }
@@ -129,7 +136,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (status == 'done' || status == 'notListening') {
       setState(() {
         _isListening = false;
-        _micIconColor = Colors.grey;
+        _micIconColor = const Color.fromARGB(255, 120, 119, 119);
       });
     }
   }
@@ -143,8 +150,6 @@ class _ChatScreenState extends State<ChatScreen> {
       _isGeneratingResponse = true;
     });
 
-    _scrollToBottom();
-
     // wait for a second before sending the message
     await Future.delayed(const Duration(seconds: 1));
 
@@ -153,13 +158,15 @@ class _ChatScreenState extends State<ChatScreen> {
       _messages.add(Message(text: '', isReceived: true, isTyping: true));
     });
 
-    _scrollToBottom();
+    print(MessageStore().chatRefreshedCount);
 
     // Send message to server and fetch response
     final response = await http.post(
-      Uri.parse('https://5575-104-155-207-37.ngrok-free.app/send_message'),
+      Uri.parse('https://3856-104-155-207-37.ngrok-free.app//send_message'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'message': _message}),
+      body: MessageStore().chatRefreshedCount == 1
+          ? jsonEncode({'message': _message, '': 'CLEAR_HISTORY'})
+          : jsonEncode({'message': _message}),
     );
 
     if (response.statusCode == 200) {
@@ -172,6 +179,50 @@ class _ChatScreenState extends State<ChatScreen> {
       responseCode = parsedCode[0];
       String responsePlay = parsedCode[1];
 
+      if (responseCode == 'USER_INPUT_NOT_UNDERSTANDABLE') {
+        MessageStore().misunderstandingsCount++;
+      } else {
+        MessageStore().misunderstandingsCount = 0;
+      }
+
+      if (MessageStore().misunderstandingsCount >= 3) {
+        // If the message is found, replace it
+        setState(
+          () {
+            if (MessageStore().misunderstandingsCount >= 3) {
+              int indexToReplace = _messages.length - 1;
+              String responseText =
+                  'I am sorry, but I am unable to understand you. To speak with a human, please press the button below to contact a theater employee.';
+
+              print('Index to replace: $indexToReplace');
+              print('Messages length: ${_messages.length}');
+              print('Messages: ${_messages[indexToReplace]}');
+
+              _isGeneratingResponse = true;
+              MessageStore().isChatLocked = true;
+
+              if (indexToReplace != -1) {
+                _messages[indexToReplace] = Message(
+                  widget: NavigationMessage(
+                    responseText: responseText,
+                    responseCode: responseCode,
+                    responsePlayTitle: '',
+                    isChatLocked: MessageStore().isChatLocked,
+                    onResetChat: onResetChat,
+                  ),
+                  isReceived: true,
+                );
+
+                return;
+              }
+            }
+          },
+        );
+        return;
+      }
+
+      print('misunderstandingsCount: ${MessageStore().misunderstandingsCount}');
+
       print('Response: $responseText');
       print('Code: $responseCode');
       print('Play: $responsePlay');
@@ -181,7 +232,6 @@ class _ChatScreenState extends State<ChatScreen> {
       });
 
       bool canNavigate = canNavigateToScreen(responseCode, responsePlay);
-      // canNavigate = false; // Always allow navigation for now
       String screen = mapCodeToScreen(responseCode, responsePlay);
 
       // add to the responseText a press the button below to navigate to the screen
@@ -213,7 +263,10 @@ class _ChatScreenState extends State<ChatScreen> {
               if (canNavigate) {
                 _messages.last = Message(
                   widget: NavigationMessage(
-                      responseText: responseText, responseCode: responseCode),
+                    responseText: responseText,
+                    responseCode: responseCode,
+                    responsePlayTitle: responsePlay,
+                  ),
                   isReceived: true,
                 );
               }
@@ -222,8 +275,6 @@ class _ChatScreenState extends State<ChatScreen> {
         });
       }
 
-      _scrollToBottom();
-
       _speak(responseText);
     } else {
       print('Failed to send message: ${response.body}');
@@ -231,95 +282,6 @@ class _ChatScreenState extends State<ChatScreen> {
         _messages.removeLast();
       });
     }
-  }
-
-  void _scrollToBottom() {
-    Future.delayed(Duration(milliseconds: 100), () {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    });
-  }
-
-  static String mapCodeToScreen(String code, String responsePlay) {
-    switch (code) {
-      case 'USER_WANTS_TO_GET_THEATER_INFO':
-        return 'theater info';
-      case 'USER_WANTS_TO_GET_DIRECTIONS':
-        return 'theater info';
-      case 'USER_WANTS_TO_CONTACT_A_HUMAN':
-        return 'theater info';
-      case 'USER_WANTS_TO_SUBMIT_A_COMPLAINT':
-        return 'complaint form';
-      case 'USER_CANCELS_TICKET':
-        return 'your e-tickets';
-      case 'USER_SEES_PURCHASED_TICKETS':
-        return 'your e-tickets';
-      case 'USER_CHOSE_THE_PLAY':
-        return '"$responsePlay" booking form';
-      case 'USER_WANTS_TO_GET_PLAY_INFO':
-        return '"$responsePlay" info';
-      default:
-        return 'ChatScreen';
-    }
-  }
-
-  static bool canNavigateToScreen(String code, String? responsePlay) {
-    switch (code) {
-      case 'USER_WANTS_TO_GET_PLAY_INFO':
-        return responsePlay!.isNotEmpty; // check again
-      case 'USER_WANTS_TO_GET_THEATER_INFO':
-        return true;
-      case 'USER_WANTS_TO_GET_DIRECTIONS':
-        return true;
-      case 'USER_WANTS_TO_CONTACT_A_HUMAN':
-        return true;
-      case 'USER_WANTS_TO_SUBMIT_A_COMPLAINT':
-        return true;
-      case 'USER_CANCELS_TICKET':
-        return true;
-      case 'USER_SEES_PURCHASED_TICKETS':
-        return true;
-      case 'USER_CHOSE_THE_PLAY':
-        return true;
-      case 'USER_INPUT_UNRELATED_TO_THEATER':
-        return false; // has extra functionality
-      case 'USER_INPUT_NOT_UNDERSTANDABLE':
-        return false;
-      case 'USER_CHOSE_INVALID_PLAY':
-        return false;
-      case 'OTHER':
-        return false;
-      default:
-        return false;
-    }
-  }
-
-  static List<String> parseCode(String responseCode) {
-    List<String> results = [];
-    bool isChosePlay = responseCode.startsWith('USER_CHOSE_THE_PLAY-');
-
-    if (responseCode.startsWith('USER_CHOSE_THE_PLAY-') ||
-        responseCode.startsWith('USER_WANTS_TO_GET_PLAY_INFO-')) {
-      List<String> parts = responseCode.split('-');
-      if (parts.length > 1) {
-        String playName = parts[1];
-        isChosePlay
-            ? results.add('USER_CHOSE_THE_PLAY')
-            : results.add('USER_WANTS_TO_GET_PLAY_INFO');
-        results.add(playName);
-      } else {
-        results.add(responseCode);
-        results.add('');
-      }
-    } else {
-      results.add(responseCode);
-      results.add('');
-    }
-
-    return results;
   }
 
   void _stopResponseGeneration() {
@@ -389,6 +351,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget chatContentWidget() {
+    bool isChatLocked = MessageStore().isChatLocked;
+
     return Positioned.fill(
       child: Material(
         color: Colors.grey[800],
@@ -414,7 +378,9 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
+                color: isChatLocked
+                    ? Colors.grey[300]
+                    : Colors.white.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(12.0),
               ),
               child: Row(
@@ -422,7 +388,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   IconButton(
                     icon: Icon(_isListening ? Icons.mic : Icons.mic_none,
                         color: _micIconColor),
-                    onPressed: _listen,
+                    onPressed: isChatLocked ? null : _listen,
                   ),
                   Expanded(
                     child: TextField(
@@ -434,19 +400,29 @@ class _ChatScreenState extends State<ChatScreen> {
                             horizontal: 15.0, vertical: 10.0),
                       ),
                       onChanged: (text) {
-                        setState(() {
-                          _message = text;
-                        });
+                        if (!isChatLocked) {
+                          setState(() {
+                            _message = text;
+                          });
+                        }
                       },
+                      enabled: !isChatLocked,
                     ),
                   ),
                   IconButton(
-                    icon: Icon(_isGeneratingResponse ? Icons.stop : Icons.send),
-                    onPressed: _isGeneratingResponse
-                        ? _stopResponseGeneration
-                        : _controller.text.isNotEmpty
-                            ? _sendMessage
-                            : null,
+                    icon: Icon(
+                      isChatLocked
+                          ? Icons.block
+                          : (_isGeneratingResponse ? Icons.stop : Icons.send),
+                      color: Colors.grey[600],
+                    ),
+                    onPressed: isChatLocked
+                        ? null
+                        : _isGeneratingResponse
+                            ? _stopResponseGeneration
+                            : _controller.text.isNotEmpty
+                                ? _sendMessage
+                                : null,
                   ),
                 ],
               ),
@@ -528,13 +504,6 @@ class _ChatScreenState extends State<ChatScreen> {
                         fontSize: 14.0,
                         color: Colors.black,
                       ),
-                    ),
-                  if (isReceived && showVolumeIcon && message != null)
-                    IconButton(
-                      icon: const Icon(Icons.volume_up),
-                      onPressed: () {
-                        _speak(message);
-                      },
                     ),
                 ],
               ),

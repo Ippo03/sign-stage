@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:sign_stage/data/plays.dart';
-import 'package:sign_stage/models/main/play.dart';
-import 'package:sign_stage/screens/main/booking_screen.dart';
-import 'package:sign_stage/screens/main/etickets_screen.dart';
-import 'package:sign_stage/screens/main/play_details_screen.dart';
-import 'package:sign_stage/screens/secondary/make_compalints_screen.dart';
-import 'package:sign_stage/screens/secondary/theater_info_screen.dart';
+import 'package:sign_stage/screens/chat/navigation_mapper.dart';
+import 'package:sign_stage/storage/message_store.dart';
 
 class NavigationMessage extends StatelessWidget {
   final String responseCode;
   final String responseText;
   final String? responsePlayTitle;
+  final bool isChatLocked;
+  final VoidCallback? onResetChat;
 
   const NavigationMessage({
     Key? key,
     required this.responseCode,
     required this.responseText,
     this.responsePlayTitle,
+    this.isChatLocked = false,
+    this.onResetChat,
   }) : super(key: key);
 
   @override
@@ -42,6 +41,7 @@ class NavigationMessage extends StatelessWidget {
           InkWell(
             onTap: () {
               print('Navigating to the appropriate screen...');
+              print('Response title: $responsePlayTitle');
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -65,7 +65,7 @@ class NavigationMessage extends StatelessWidget {
                   children: [
                     Text(
                       'Go to screen',
-                      style: TextStyle(color: Colors.white, fontSize: 13.0),
+                      style: TextStyle(color: Colors.white, fontSize: 15.0),
                     ),
                     SizedBox(width: 8.0),
                     Icon(
@@ -78,37 +78,87 @@ class NavigationMessage extends StatelessWidget {
               ),
             ),
           ),
+          isChatLocked
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'or you can clear the chat to start a new chat by pressing the following button.',
+                        style: TextStyle(color: Colors.black, fontSize: 14.0),
+                      ),
+                      const SizedBox(height: 10.0),
+                      InkWell(
+                        onTap: () {
+                          // Clear the chat
+                          print('Clearing the chat...');
+                          // show an alert dialog to confirm the action
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Clear chat'),
+                                content: const Text(
+                                    'Are you sure you want to clear the chat?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('No'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      MessageStore().messages.clear();
+                                      Navigator.pop(context);
+                                      // reload the chat screen to reflect the changes
+                                      MessageStore().chatRefreshedCount++;
+                                      onResetChat!();
+                                      // clear the chat
+                                      print('Chat cleared!');
+                                    },
+                                    child: const Text('Yes'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(24.0),
+                        splashColor: Colors.red.withOpacity(0.5),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 16.0),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(24.0),
+                          ),
+                          child: const Center(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Clear chat',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 15.0),
+                                ),
+                                SizedBox(width: 8.0),
+                                Icon(
+                                  Icons.refresh,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
         ],
       ),
     );
-  }
-}
-
-Widget? mapResponseCodeToWidget(String code, String? responseText) {
-  print('Response text before mapping: $responseText');
-  responseText ??= '';
-  print('Response text after mapping: $responseText');
-  print('Plays inside map code {plays}');
-  
-  Play? responsePlay = findPlayByTitle(plays, responseText);
-  print('Play inside map code {responsePlay}');
-
-  switch (code) {
-    case 'USER_WANTS_TO_GET_THEATER_INFO':
-    case 'USER_WANTS_TO_GET_DIRECTIONS':
-    case 'USER_WANTS_TO_CONTACT_A_HUMAN':
-      return const TheaterInfoScreen();
-    case 'USER_WANTS_TO_SUBMIT_A_COMPLAINT':
-      return const MakeComplaintsScreen();
-    case 'USER_CANCELS_TICKET':
-    case 'USER_SEES_PURCHASED_TICKETS':
-      return const ETicketsScreen();
-    case 'USER_CHOSE_THE_PLAY':
-      return BookingScreen(play: responsePlay!);
-    case 'USER_WANTS_TO_GET_PLAY_INFO':
-      print('Play inside get info code {responsePlay}');
-      return PlayDetailsScreen(play: responsePlay!);
-    default:
-      return null;
   }
 }
