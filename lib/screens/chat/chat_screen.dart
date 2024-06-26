@@ -157,7 +157,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Send message to server and fetch response
     final response = await http.post(
-      Uri.parse('https://fc0e-35-227-22-95.ngrok-free.app/send_message'),
+      Uri.parse('https://a842-104-155-207-37.ngrok-free.app/send_message'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'message': _message}),
     );
@@ -172,11 +172,15 @@ class _ChatScreenState extends State<ChatScreen> {
       responseCode = parsedCode[0];
       String responsePlay = parsedCode[1];
 
+      print('Response: $responseText');
+      print('Code: $responseCode');
+      print('Play: $responsePlay');
+
       setState(() {
         _messages.removeLast(); // Remove typing indicator
       });
 
-      bool canNavigate = canNavigateToScreen(responseCode);
+      bool canNavigate = canNavigateToScreen(responseCode, responsePlay);
       // canNavigate = false; // Always allow navigation for now
       String screen = mapCodeToScreen(responseCode, responsePlay);
 
@@ -262,10 +266,10 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  static bool canNavigateToScreen(String code) {
+  static bool canNavigateToScreen(String code, String? responsePlay) {
     switch (code) {
       case 'USER_WANTS_TO_GET_PLAY_INFO':
-        return true; // check again
+        return responsePlay!.isNotEmpty; // check again
       case 'USER_WANTS_TO_GET_THEATER_INFO':
         return true;
       case 'USER_WANTS_TO_GET_DIRECTIONS':
@@ -283,7 +287,9 @@ class _ChatScreenState extends State<ChatScreen> {
       case 'USER_INPUT_UNRELATED_TO_THEATER':
         return false; // has extra functionality
       case 'USER_INPUT_NOT_UNDERSTANDABLE':
-        return false; // has extra functionality
+        return false;
+      case 'USER_CHOSE_INVALID_PLAY':
+        return false;
       case 'OTHER':
         return false;
       default:
@@ -295,17 +301,22 @@ class _ChatScreenState extends State<ChatScreen> {
     List<String> results = [];
     bool isChosePlay = responseCode.startsWith('USER_CHOSE_THE_PLAY-');
 
-    if (responseCode.startsWith('USER_CHOSE_THE_PLAY-') || responseCode.startsWith('USER_WANTS_TO_GET_PLAY_INFO-')) {
+    if (responseCode.startsWith('USER_CHOSE_THE_PLAY-') ||
+        responseCode.startsWith('USER_WANTS_TO_GET_PLAY_INFO-')) {
       List<String> parts = responseCode.split('-');
       if (parts.length > 1) {
         String playName = parts[1];
-        isChosePlay ? results.add('USER_CHOSE_THE_PLAY') : results.add('USER_WANTS_TO_GET_PLAY_INFO');
+        isChosePlay
+            ? results.add('USER_CHOSE_THE_PLAY')
+            : results.add('USER_WANTS_TO_GET_PLAY_INFO');
         results.add(playName);
       } else {
-        results.add(responseCode); 
+        results.add(responseCode);
+        results.add('');
       }
     } else {
       results.add(responseCode);
+      results.add('');
     }
 
     return results;

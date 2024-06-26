@@ -82,11 +82,12 @@ class _ETicketsScreenState extends State<ETicketsScreen> {
                           return ETicketItem(
                             key: ValueKey(ticket.id),
                             ticket: ticket,
+                            currentIndex: _currentIndex,
                           );
                         }).toList(),
                         carouselController: _carouselController,
                         options: CarouselOptions(
-                          height: 475,
+                          height: 650,
                           enlargeCenterPage: true,
                           onPageChanged: (index, reason) {
                             setState(() {
@@ -102,6 +103,7 @@ class _ETicketsScreenState extends State<ETicketsScreen> {
                 ETicketItem(
                   key: ValueKey(user!.tickets[0].id),
                   ticket: user!.tickets[0],
+                  currentIndex: _currentIndex,
                 )
               else
                 const Center(
@@ -114,70 +116,6 @@ class _ETicketsScreenState extends State<ETicketsScreen> {
                     ),
                   ),
                 ),
-              const SizedBox(height: 10),
-              Center(
-                child: user!.tickets.isNotEmpty
-                    ? ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('Cancel E-Ticket'),
-                                content: const Text(
-                                  'Are you sure you want to cancel this E-Ticket?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('No'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-
-                                      // remove the ticket from the play's available dates
-                                      Ticket ticket = user!.tickets[_currentIndex];
-                                      String timeOfDay = ticket.bookingInfo.selectedTime == "18:00" ? "afternoon" : "night";
-                                      ticket.play.availableDates[ticket.bookingInfo.selectedDate]![
-                                          timeOfDay]!
-                                          .remove(ticket);
-
-                                      // remove the ticket from the user's tickets      
-                                      user!.tickets.removeAt(_currentIndex);
-
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return const CustomPopUp(
-                                              success: false);
-                                        },
-                                      );
-                                    },
-                                    child: const Text('Yes'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 50, vertical: 15),
-                        ),
-                        child: const Text(
-                          'Cancel E-Ticket',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                      )
-                    : null,
-              ),
             ],
           ),
         ),

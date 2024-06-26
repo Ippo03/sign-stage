@@ -45,14 +45,13 @@ class NavigationMessage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => mapResponseCodeToWidget(responseCode, responsePlayTitle)!,
+                  builder: (context) =>
+                      mapResponseCodeToWidget(responseCode, responsePlayTitle)!,
                 ),
               );
             },
-            borderRadius: BorderRadius.circular(
-                24.0), 
-            splashColor:
-                Colors.blue.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(24.0),
+            splashColor: Colors.blue.withOpacity(0.5),
             child: Container(
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
@@ -101,6 +100,7 @@ Widget? mapResponseCodeToWidget(String code, String? responseText) {
     case 'USER_CHOSE_THE_PLAY':
       return BookingScreen(play: responsePlay!);
     case 'USER_WANTS_TO_GET_PLAY_INFO':
+      print('Play inside get info code {responsePlay}');
       return PlayDetailsScreen(play: responsePlay!);
     default:
       return null;

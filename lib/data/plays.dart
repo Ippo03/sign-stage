@@ -82,7 +82,7 @@ const jsonString = '''
     },
     "hall": "Hall B",
     "ageLimit": "14+",
-    "additionalInfo": "Includes surtitles and sign language interpreter.",
+    "additionalInfo": "Does not include surtitles or sign language interpreter.",
     "hearingImpaired": false,
     "imageUrl": "assets/images/odyssey.jpg"
   },
@@ -164,8 +164,8 @@ const jsonString = '''
     },
     "hall": "Hall B",
     "ageLimit": "15+",
-    "additionalInfo": "Includes surtitles and sign language interpreter.",
-    "hearingImpaired": true,
+    "additionalInfo": "Does not include surtitles or sign language interpreter.",
+    "hearingImpaired": false,
     "imageUrl": "assets/images/seagull.jpg"
   }
 ]

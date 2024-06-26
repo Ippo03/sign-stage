@@ -9,17 +9,22 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sign_stage/models/main/ticket.dart';
+import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/widgets/custom/custom_barcode_image.dart';
 import 'package:sign_stage/widgets/custom/custom_detailed_column.dart';
+import 'package:sign_stage/widgets/custom/custom_pop_up.dart';
 
 class ETicketItem extends StatelessWidget {
   ETicketItem({
     Key? key,
     required this.ticket,
+    required this.currentIndex,
   }) : super(key: key);
 
   final Ticket ticket;
+  final int currentIndex;
   final GlobalKey _globalKey = GlobalKey();
+  final user = User.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -142,6 +147,77 @@ class ETicketItem extends StatelessWidget {
                   ),
                 ),
               ),
+              const SizedBox(height: 10.0),
+              Center(
+                child: user!.tickets.isNotEmpty
+                    ? ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Cancel E-Ticket'),
+                                content: const Text(
+                                  'Are you sure you want to cancel this E-Ticket?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('No'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+
+                                      // remove the ticket from the play's available dates
+                                      Ticket ticket =
+                                          user!.tickets[currentIndex];
+                                      String timeOfDay =
+                                          ticket.bookingInfo.selectedTime ==
+                                                  "18:00"
+                                              ? "afternoon"
+                                              : "night";
+                                      ticket
+                                          .play
+                                          .availableDates[ticket.bookingInfo
+                                              .selectedDate]![timeOfDay]!
+                                          .remove(ticket);
+
+                                      // remove the ticket from the user's tickets
+                                      user!.tickets.removeAt(currentIndex);
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return const CustomPopUp(
+                                              success: false);
+                                        },
+                                      );
+                                    },
+                                    child: const Text('Yes'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 15),
+                        ),
+                        child: const Text(
+                          'Cancel E-Ticket',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
             ],
           ),
         ),
@@ -183,7 +259,8 @@ class ETicketItem extends StatelessWidget {
       if (downloadsDirectory == null) {
         throw Exception("Unable to get downloads directory");
       }
-      final downloadsFilePath = '${downloadsDirectory.path}/ticket_${ticket.id}.png';
+      final downloadsFilePath =
+          '${downloadsDirectory.path}/ticket_${ticket.id}.png';
       final File tempFile = File(tempFilePath);
       final File downloadsFile = await tempFile.copy(downloadsFilePath);
 
