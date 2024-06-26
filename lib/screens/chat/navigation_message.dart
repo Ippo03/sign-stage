@@ -85,7 +85,13 @@ class NavigationMessage extends StatelessWidget {
 }
 
 Widget? mapResponseCodeToWidget(String code, String? responseText) {
-  Play? responsePlay = findPlayByTitle(plays, responseText!);
+  print('Response text before mapping: $responseText');
+  responseText ??= '';
+  print('Response text after mapping: $responseText');
+  print('Plays inside map code {plays}');
+  
+  Play? responsePlay = findPlayByTitle(plays, responseText);
+  print('Play inside map code {responsePlay}');
 
   switch (code) {
     case 'USER_WANTS_TO_GET_THEATER_INFO':

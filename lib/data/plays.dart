@@ -176,6 +176,7 @@ List<Play> plays = parsePlaysFromJson(jsonString);
 Play? findPlayByTitle(List<Play> plays, String title) {
   for (Play play in plays) {
     if (play.title.toLowerCase() == title.toLowerCase()) {
+      print('Found play with title: ${play.title}');
       return play;
     }
   }

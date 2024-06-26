@@ -157,7 +157,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Send message to server and fetch response
     final response = await http.post(
-      Uri.parse('https://a842-104-155-207-37.ngrok-free.app/send_message'),
+      Uri.parse('https://5575-104-155-207-37.ngrok-free.app/send_message'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'message': _message}),
     );
@@ -258,9 +258,9 @@ class _ChatScreenState extends State<ChatScreen> {
       case 'USER_SEES_PURCHASED_TICKETS':
         return 'your e-tickets';
       case 'USER_CHOSE_THE_PLAY':
-        return '${responsePlay.toLowerCase()} booking form';
+        return '"$responsePlay" booking form';
       case 'USER_WANTS_TO_GET_PLAY_INFO':
-        return '${responsePlay.toLowerCase()} info';
+        return '"$responsePlay" info';
       default:
         return 'ChatScreen';
     }
