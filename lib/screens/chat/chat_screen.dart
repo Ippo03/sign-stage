@@ -167,16 +167,10 @@ class _ChatScreenState extends State<ChatScreen> {
       // Display the response character by character
       String responseText = responseData['response'];
       String responseCode = responseData['code'];
-      
-      // The following comes from the backend
-      // USER_CHOSE_THE_PLAY- + playFound[0] or USER_CHOSE_THE_PLAY
-      // when the - exists there is also a play following
-      // extract also the play name from the response
-      // if the plays does not exist just get the code
-      if (responseCode.startsWith('USER_CHOSE_THE_PLAY-')) {
-        String playName = responseCode.split('-')[1];
-        responseCode = 'USER_CHOSE_THE_PLAY';
-      } 
+
+      List<String> parsedCode = parseCode(responseCode);
+      responseCode = parsedCode[0];
+      String responsePlay = parsedCode[1];
 
       setState(() {
         _messages.removeLast(); // Remove typing indicator
@@ -184,7 +178,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       bool canNavigate = canNavigateToScreen(responseCode);
       // canNavigate = false; // Always allow navigation for now
-      String screen = mapCodeToScreen(responseCode);
+      String screen = mapCodeToScreen(responseCode, responsePlay);
 
       // add to the responseText a press the button below to navigate to the screen
       if (canNavigate) {
@@ -245,7 +239,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  static String mapCodeToScreen(String code) {
+  static String mapCodeToScreen(String code, String responsePlay) {
     switch (code) {
       case 'USER_WANTS_TO_GET_THEATER_INFO':
         return 'theater info';
@@ -259,6 +253,10 @@ class _ChatScreenState extends State<ChatScreen> {
         return 'your e-tickets';
       case 'USER_SEES_PURCHASED_TICKETS':
         return 'your e-tickets';
+      case 'USER_CHOSE_THE_PLAY':
+        return '${responsePlay.toLowerCase()} booking form';
+      case 'USER_WANTS_TO_GET_PLAY_INFO':
+        return '${responsePlay.toLowerCase()} info';
       default:
         return 'ChatScreen';
     }
@@ -280,6 +278,8 @@ class _ChatScreenState extends State<ChatScreen> {
         return true;
       case 'USER_SEES_PURCHASED_TICKETS':
         return true;
+      case 'USER_CHOSE_THE_PLAY':
+        return true;
       case 'USER_INPUT_UNRELATED_TO_THEATER':
         return false; // has extra functionality
       case 'USER_INPUT_NOT_UNDERSTANDABLE':
@@ -291,7 +291,25 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  static String parseCode
+  static List<String> parseCode(String responseCode) {
+    List<String> results = [];
+    bool isChosePlay = responseCode.startsWith('USER_CHOSE_THE_PLAY-');
+
+    if (responseCode.startsWith('USER_CHOSE_THE_PLAY-') || responseCode.startsWith('USER_WANTS_TO_GET_PLAY_INFO-')) {
+      List<String> parts = responseCode.split('-');
+      if (parts.length > 1) {
+        String playName = parts[1];
+        isChosePlay ? results.add('USER_CHOSE_THE_PLAY') : results.add('USER_WANTS_TO_GET_PLAY_INFO');
+        results.add(playName);
+      } else {
+        results.add(responseCode); 
+      }
+    } else {
+      results.add(responseCode);
+    }
+
+    return results;
+  }
 
   void _stopResponseGeneration() {
     setState(() {

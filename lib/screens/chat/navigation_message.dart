@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:sign_stage/data/plays.dart';
+import 'package:sign_stage/models/main/play.dart';
+import 'package:sign_stage/screens/main/booking_screen.dart';
 import 'package:sign_stage/screens/main/etickets_screen.dart';
+import 'package:sign_stage/screens/main/play_details_screen.dart';
 import 'package:sign_stage/screens/secondary/make_compalints_screen.dart';
 import 'package:sign_stage/screens/secondary/theater_info_screen.dart';
 
 class NavigationMessage extends StatelessWidget {
   final String responseCode;
   final String responseText;
+  final String? responsePlayTitle;
 
   const NavigationMessage({
     Key? key,
     required this.responseCode,
     required this.responseText,
+    this.responsePlayTitle,
   }) : super(key: key);
 
   @override
@@ -39,14 +45,14 @@ class NavigationMessage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => mapResponseCodeToWidget(responseCode)!,
+                  builder: (context) => mapResponseCodeToWidget(responseCode, responsePlayTitle)!,
                 ),
               );
             },
             borderRadius: BorderRadius.circular(
                 24.0), 
             splashColor:
-                Colors.blue.withOpacity(0.5), // Customize the splash color
+                Colors.blue.withOpacity(0.5),
             child: Container(
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
@@ -79,7 +85,9 @@ class NavigationMessage extends StatelessWidget {
   }
 }
 
-Widget? mapResponseCodeToWidget(String code) {
+Widget? mapResponseCodeToWidget(String code, String? responseText) {
+  Play? responsePlay = findPlayByTitle(plays, responseText!);
+
   switch (code) {
     case 'USER_WANTS_TO_GET_THEATER_INFO':
     case 'USER_WANTS_TO_GET_DIRECTIONS':
@@ -90,6 +98,10 @@ Widget? mapResponseCodeToWidget(String code) {
     case 'USER_CANCELS_TICKET':
     case 'USER_SEES_PURCHASED_TICKETS':
       return const ETicketsScreen();
+    case 'USER_CHOSE_THE_PLAY':
+      return BookingScreen(play: responsePlay!);
+    case 'USER_WANTS_TO_GET_PLAY_INFO':
+      return PlayDetailsScreen(play: responsePlay!);
     default:
       return null;
   }
