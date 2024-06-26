@@ -18,10 +18,10 @@ class ProgressBar extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildStep(Icons.info, 1, currentStep, isFirst: true),
-        _buildStep(Icons.calendar_today, 2, currentStep),
-        _buildStep(Icons.access_time, 3, currentStep),
-        _buildStep(Icons.payment, 4, currentStep, isLast: true),
+        _buildStep(Icons.info_outline, 1, currentStep, isFirst: true),
+        _buildStep(Icons.date_range, 2, currentStep),
+        _buildStep(Icons.airline_seat_recline_normal, 3, currentStep),
+        _buildStep(Icons.credit_card, 4, currentStep, isLast: true),
       ],
     );
   }

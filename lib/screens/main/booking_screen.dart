@@ -125,23 +125,19 @@ class _BookingScreenState extends State<BookingScreen> {
           rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
         ),
         calendarStyle: CalendarStyle(
-          todayDecoration: const BoxDecoration(
-            color: Colors.blueAccent,
-            shape: BoxShape.circle,
+          todayDecoration: BoxDecoration(
+            // keep it like the others
+            color: Colors.grey[600],
           ),
-          todayTextStyle:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           selectedDecoration: BoxDecoration(
             color: Colors.blueAccent.withOpacity(0.5),
             shape: BoxShape.circle,
           ),
           selectedTextStyle:
               const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          weekendTextStyle:
-              const TextStyle(color: Colors.white),
+          weekendTextStyle: const TextStyle(color: Colors.white),
           outsideTextStyle: const TextStyle(
-              color: Colors
-                  .grey), // Grey color for days outside the month
+              color: Colors.grey), // Grey color for days outside the month
           outsideDecoration: const BoxDecoration(
               color: Colors
                   .transparent), // Example: Transparent background for days outside the month
@@ -209,58 +205,79 @@ class _BookingScreenState extends State<BookingScreen> {
         padding: const EdgeInsets.all(12.0),
         margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
         decoration: BoxDecoration(
-          color: soldOut ? Colors.grey : Colors.blueAccent, // Grey if sold out
+          color: soldOut ? Colors.grey : Colors.grey[100], // Grey if sold out
           borderRadius: BorderRadius.circular(12.0),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              time,
-              style: TextStyle(fontSize: 20, color: Colors.grey[800]),
-            ),
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Seat status: $seatStatus',
-                  style: TextStyle(color: Colors.grey[800]),
+                  time,
+                  style: TextStyle(fontSize: 20, color: Colors.grey[800]),
                 ),
-                const SizedBox(width: 10.0),
-                Icon(
-                  Icons.circle,
-                  color: seatColor,
-                  size: 16.0,
+                Row(
+                  children: [
+                    Text(
+                      'Seat status: $seatStatus',
+                      style: TextStyle(color: Colors.grey[800]),
+                    ),
+                    const SizedBox(width: 10.0),
+                    Icon(
+                      Icons.circle,
+                      color: seatColor,
+                      size: 16.0,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    widget.play.hearingImpaired
+                        ? Text(
+                            'Hearing impaired: ${hearingImpairedStatus ? 'Not Available' : 'Available'}',
+                            style: TextStyle(color: Colors.grey[800]),
+                          )
+                        : const Text('No seats for hearing impaired people'),
+                    const SizedBox(width: 10.0),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: hearingImpairedColor,
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: widget.play.hearingImpaired
+                          ? const Icon(
+                              Icons.hearing,
+                              color: Colors.white,
+                              size: 16.0,
+                            )
+                          : const Icon(
+                              Icons.hearing_disabled,
+                              color: Colors.white,
+                              size: 16.0,
+                            ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            Row(
-              children: [
-                widget.play.hearingImpaired
-                    ? Text(
-                        'Hearing impaired: ${hearingImpairedStatus ? 'Not Available' : 'Available'}',
-                        style: TextStyle(color: Colors.grey[800]),
-                      )
-                    : const Text('No seats for hearing impaired people'),
-                const SizedBox(width: 10.0),
-                Container(
+            const Spacer(),
+            soldOut
+                ? const Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.grey,
+                  )
+                : Container(
+                  padding: const EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
-                    color: hearingImpairedColor,
-                    borderRadius: BorderRadius.circular(15.0),
+                    color: Colors.blueAccent,
+                    borderRadius: BorderRadius.circular(4.0),
                   ),
-                  child: widget.play.hearingImpaired
-                      ? const Icon(
-                          Icons.hearing,
-                          color: Colors.white,
-                          size: 16.0,
-                        )
-                      : const Icon(
-                          Icons.hearing_disabled,
-                          color: Colors.white,
-                          size: 16.0,
-                        ),
+                  child: const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                    ),
                 ),
-              ],
-            ),
           ],
         ),
       ),

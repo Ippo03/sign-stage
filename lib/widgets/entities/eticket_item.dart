@@ -8,7 +8,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:sign_stage/models/main/ticket.dart';
 import 'package:sign_stage/widgets/custom/custom_barcode_image.dart';
 import 'package:sign_stage/widgets/custom/custom_detailed_column.dart';
@@ -152,10 +151,13 @@ class ETicketItem extends StatelessWidget {
 
   Future<void> captureAndSaveImage() async {
     try {
-      await Future.delayed(Duration(milliseconds: 500)); // Ensure widget build completion
-      final RenderRepaintBoundary boundary = _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      await Future.delayed(
+          Duration(milliseconds: 500)); // Ensure widget build completion
+      final RenderRepaintBoundary boundary = _globalKey.currentContext!
+          .findRenderObject() as RenderRepaintBoundary;
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      final ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) {
         throw Exception('ByteData is null');
       }
@@ -172,29 +174,27 @@ class ETicketItem extends StatelessWidget {
 
   Future<void> downloadTicketImage(Ticket ticket) async {
     try {
-      // Request storage permissions
-      if (await Permission.storage.request().isGranted) {
-        final directory = await getTemporaryDirectory();
-        final tempFilePath = '${directory.path}/ticket_${ticket.id}.png';
+      // Save the captured image to a temporary directory
+      final directory = await getTemporaryDirectory();
+      final tempFilePath = '${directory.path}/ticket_${ticket.id}.png';
 
-        Directory? downloadsDirectory = await getDownloadsDirectory();
-        if (downloadsDirectory == null) {
-          throw Exception("Unable to get downloads directory");
-        }
-        final downloadsFilePath = '${downloadsDirectory.path}/ticket_${ticket.id}.png';
-        final File tempFile = File(tempFilePath);
-        final File downloadsFile = await tempFile.copy(downloadsFilePath);
-
-        await FlutterDownloader.enqueue(
-          url: Uri.file(downloadsFile.path).toString(),
-          savedDir: downloadsDirectory.path,
-          fileName: 'ticket_${ticket.id}.png',
-          showNotification: true,
-          openFileFromNotification: true,
-        );
-      } else {
-        print('Permission denied');
+      // Move the file to the downloads directory
+      Directory? downloadsDirectory = await getDownloadsDirectory();
+      if (downloadsDirectory == null) {
+        throw Exception("Unable to get downloads directory");
       }
+      final downloadsFilePath = '${downloadsDirectory.path}/ticket_${ticket.id}.png';
+      final File tempFile = File(tempFilePath);
+      final File downloadsFile = await tempFile.copy(downloadsFilePath);
+
+      // Use the correct file URL format for FlutterDownloader
+      await FlutterDownloader.enqueue(
+        url: downloadsFile.path,
+        savedDir: downloadsDirectory.path,
+        fileName: 'ticket_${ticket.id}.png',
+        showNotification: true,
+        openFileFromNotification: true,
+      );
     } catch (e) {
       print('Error downloading image: $e');
     }

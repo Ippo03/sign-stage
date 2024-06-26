@@ -9,6 +9,7 @@ import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/models/util/booking_info.dart';
 import 'package:sign_stage/models/util/credit_card.dart';
 import 'package:sign_stage/widgets/custom/custom_credit_card.dart';
+import 'package:sign_stage/widgets/custom/custom_info_field.dart';
 import 'package:sign_stage/widgets/custom/custom_pop_up.dart';
 import 'package:sign_stage/widgets/custom/custom_text_field.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
@@ -201,10 +202,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ),
         body: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Text(
                   'Payment Method',
                   style: TextStyle(
@@ -214,17 +215,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Text(
-                  'Hold a card for 2 seconds to auto-fill the payment details.',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 5),
               SizedBox(
                 height: 260,
                 child: PageView.builder(
@@ -262,7 +252,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
               ),
               const SizedBox(height: 20),
               const Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: CustomInfoField(
+                  infoText:
+                      'Hold a credit card for 2 seconds to automatically fill in the payment details.',
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
                   'Payment Details',
                   style: TextStyle(

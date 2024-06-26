@@ -142,4 +142,9 @@ class Play {
     }
     return reservedSeats;
   }
+
+  // function that for every play get as input its availableDates of type (HashMap<DateTime, HashMap<String, List<Ticket?>>> availableDates =
+   //   HashMap<DateTime, HashMap<String, List<Ticket?>>>();)return the new availableDates with the tickets solds in every date and timeOfDay
+   
+
 }

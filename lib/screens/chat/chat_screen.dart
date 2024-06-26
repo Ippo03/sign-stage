@@ -7,7 +7,6 @@ import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/models/util/message.dart';
 import 'package:sign_stage/screens/chat/navigation_message.dart';
 import 'package:sign_stage/storage/message_store.dart';
-import 'package:sign_stage/widgets/progress_bar/progress_bar.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_provider.dart';
 import 'package:sign_stage/widgets/progress_bar/progress_bar_state.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -117,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _isListening = false;
         _micIconColor =
-            Colors.grey; // Change mic icon color to grey when not listening
+            Colors.grey; 
       });
       _speech.stop();
     }
@@ -129,7 +128,7 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _isListening = false;
         _micIconColor =
-            Colors.grey; // Change mic icon color to grey when not listening
+            Colors.grey; 
       });
     }
   }
@@ -163,6 +162,13 @@ class _ChatScreenState extends State<ChatScreen> {
       // Display the response character by character
       String responseText = responseData['response'];
       String responseCode = responseData['code'];
+
+      bool canNavigate = canNavigateToScreen(responseCode);
+
+      if (canNavigate) {
+        // add to the responseText a message 'Press the button below to navigate to the screen'
+        responseText += '\n\nPress the button below to navigate to the screen';
+      }
       print(('Code: $responseCode'));
       setState(() {
         _messages.removeLast();
@@ -268,8 +274,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
                 ),
-                const SizedBox(width: 20.0),
-                const ProgressBar(),
+                const SizedBox(width: 4.0),
+                const Text(
+                  'Sign Stage Theater Assistant',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20
+                  ),
+                ),
               ],
             ),
           ),

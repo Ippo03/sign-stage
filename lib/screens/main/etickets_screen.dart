@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:sign_stage/models/main/ticket.dart';
 import 'package:sign_stage/models/main/user.dart';
 import 'package:sign_stage/screens/main/home_screen.dart';
+import 'package:sign_stage/widgets/custom/custom_info_field.dart';
 import 'package:sign_stage/widgets/custom/custom_pop_up.dart';
 import 'package:sign_stage/widgets/entities/eticket_item.dart';
 
@@ -66,21 +67,9 @@ class _ETicketsScreenState extends State<ETicketsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Instruction',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Come to the theater, show your e-Ticket to the front entrance and let the staff scan the barcode.',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 16,
-                ),
+              const CustomInfoField(
+                infoText:
+                    'Come to the theater, show your e-Ticket to the front entrance and let the staff scan the barcode.',
               ),
               const SizedBox(height: 20),
               if (user!.tickets.length > 1)
