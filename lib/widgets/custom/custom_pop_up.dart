@@ -73,7 +73,7 @@ class CustomPopUp extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 64.0),
+                      const SizedBox(height: 52.0),
                       SizedBox(
                         width: double.infinity, 
                         child: ElevatedButton(
