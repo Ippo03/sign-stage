@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:label="sign_stage"
+        android:label="Sign Stage"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
